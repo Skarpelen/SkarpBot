@@ -4,6 +4,7 @@
     using System.Text.RegularExpressions;
     using Discord;
     using Discord.Commands;
+    using Discord.WebSocket;
     using SkarpBot.Data;
     using SkarpBot.OnlyWar;
 
@@ -47,6 +48,23 @@
 
             await DataAccessLayer.Nuller(Context.User.Id, aType);
             await ReplyAsync("Что то случилось");
+        }
+
+        [Command("установить")]
+        public async Task SetHp(int point, int val)
+        {
+            val *= -1;
+            await DataAccessLayer.ChangeHp(Context.User.Id, point, val);
+            await ReplyAsync("Значения применены");
+        }
+
+        [Command("установить")]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
+        public async Task SetHp(IUser user, int point, int val)
+        {
+            val *= -1;
+            await DataAccessLayer.ChangeHp(user.Id, point, val);
+            await ReplyAsync("Значения применены");
         }
 
         [Command("префикс")]
@@ -104,6 +122,14 @@
             await ReplyAsync(DataAccessLayer.GetHp(Context.User.Id));
         }
 
+        /// <summary>
+        /// Стрельба в обычном режиме.
+        /// </summary>
+        /// <param name="accuracy">Коэфициент меткости.</param>
+        /// <param name="mode">Режим стрельбы.</param>
+        /// <param name="wType">Оружие стреляющего.</param>
+        /// <param name="user">Цель.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("стрелять")]
         [Alias("стрельба", "с")]
         public async Task FireWeapon(int accuracy, int mode, string wType, IUser user)
@@ -124,43 +150,16 @@
         }
 
         /// <summary>
-        /// Стрельба в обычном режиме.
-        /// </summary>
-        /// <param name="accuracy">Коэфициент меткости.</param>
-        /// <param name="mode">Режим стрельбы.</param>
-        /// <param name="wType">Оружие стреляющего.</param>
-        /// <param name="aType">Броня цели.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Command("стрелять")]
-        [Alias("стрельба", "с")]
-        public async Task FireWeapon(int accuracy, int mode, string wType, string aType)
-        {
-            if (mode > 2 || mode < 0 || accuracy < 0)
-            {
-                await ReplyAsync("Неправильные значения режима стрельбы/меткости");
-                return;
-            }
-
-            var gunFire = new FireWeapon(accuracy, mode, wType, aType);
-            int point, dmg;
-            // await ReplyAsync(gunFire.Shoot());
-
-            /*gunFire.Shoot(out point, out dmg);
-            await DataAccessLayer.ChangeHp(Context.User.Id, point, dmg);
-            await ReplyAsync(DataAccessLayer.GetHp(Context.User.Id));*/
-        }
-
-        /// <summary>
         /// Прицельный выстрел.
         /// </summary>
         /// <param name="accuracy">Коэфициент меткости.</param>
         /// <param name="wType">Оружие стреляющего.</param>
-        /// <param name="aType">Броня цели.</param>
+        /// <param name="user">Цель.</param>
         /// <param name="aimPoint">Куда надо попасть.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("стрелять")]
         [Alias("стрельба", "с")]
-        public async Task FireWeapon(int accuracy, string wType, string aType, string aimPoint)
+        public async Task FireWeapon(int accuracy, string wType, string aimPoint, IUser user)
         {
             if (accuracy < 0)
             {
@@ -168,8 +167,9 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, wType, aType, aimPoint);
-            await ReplyAsync(gunFire.CalledShot());
+            var gunFire = new FireWeapon(accuracy, wType, aimPoint, DataAccessLayer.GetArmour(user.Id), user.Id);
+            var shoot = await gunFire.CalledShot(DataAccessLayer);
+            await ReplyAsync(shoot);
         }
 
         /// <summary>
@@ -216,6 +216,21 @@
         {
             var grenadeThrow = new Grenade(wType);
             await ReplyAsync(grenadeThrow.WriteQualitiesGrenade());
+        }
+
+        [Command("резать")]
+        public async Task MeleeWeapon(int accuracy, string wType, IUser user)
+        {
+            var knifePower = new Melee(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id);
+            var swing = await knifePower.Swing(DataAccessLayer);
+            await ReplyAsync(swing);
+        }
+
+        [Command("резать")]
+        public async Task MeleeWeapon(string wType)
+        {
+            var knifePower = new Melee(wType);
+            await ReplyAsync(knifePower.WriteQualitiesMelee());
         }
 
         /// <summary>

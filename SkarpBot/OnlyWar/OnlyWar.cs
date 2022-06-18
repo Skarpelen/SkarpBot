@@ -41,7 +41,7 @@
             AType = x4;
         }
 
-        public string Start()
+        /*public string Start()
         {
             Random rnd = new();
             string[] hitPoints = new string[] { "голову", "левую руку", "правую руку", "торс", "левую ногу", "правую ногу" };
@@ -49,8 +49,8 @@
             int Value = rnd.Next(100);
             int hitValue = (Value / 10) + (Value % 10 * 10);
             int hitIndex = HitPointCalculate(hitValue);
-            var fireweapon = new FireWeapon(175, mode, WType, AType);
-            Armour armr = new(AType);
+            var fireweapon = new FireWeapon(175, mode, WType, aType);
+            Armour armr = new(aType);
 
             if (fireweapon.error | armr.error)
             {
@@ -74,7 +74,7 @@
             {
                 return $"Выстрел{(mode != 0 ? "ы" : string.Empty)} прош{(mode != 0 ? "ли" : "ёл")} мимо цели\nСтепень успеха: {fireweapon.degree}";
             }
-        }
+        }*/
 
         private static int HitPointCalculate(int hitValue)
         {

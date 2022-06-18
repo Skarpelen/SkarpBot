@@ -3,14 +3,24 @@
     using System;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Discord;
     using Discord.Interactions;
+    using SkarpBot.Data;
     using SkarpBot.OnlyWar;
 
     /// <summary>
     /// Все доступные команды для бота через /.
     /// </summary>
-    public class SlashGeneral : InteractionModuleBase<SocketInteractionContext>
+    public class SlashGeneral : SkarpBotModuleBase
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public SlashGeneral(IHttpClientFactory httpClientFactory, DataAccessLayer dataAccessLayer)
+            : base(dataAccessLayer)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
         /// <summary>
         /// Команда пишущая Pong!.
         /// </summary>
@@ -70,7 +80,8 @@
                 return;
             }
 
-            var gunFire = new SkarpBot.OnlyWar.FireWeapon(accuracy, mode, wType, aType);
+            ////////////// на переработке
+            //var gunFire = new FireWeapon(accuracy, mode, wType, aType);
             //await ReplyAsync(gunFire.Shoot());
         }
 
@@ -83,7 +94,7 @@
         /// <param name="aimPoint">Куда надо попасть.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [SlashCommand("стрелять", "Прицельный выстрел")]
-        public async Task FireWeapon(int accuracy, string wType, string aType, string aimPoint)
+        public async Task FireWeapon(int accuracy, string wType, string aimPoint, IUser user)
         {
             if (accuracy < 0)
             {
@@ -91,8 +102,9 @@
                 return;
             }
 
-            var gunFire = new SkarpBot.OnlyWar.FireWeapon(accuracy, wType, aType, aimPoint);
-            await ReplyAsync(gunFire.CalledShot());
+            var gunFire = new FireWeapon(accuracy, wType, aimPoint, DataAccessLayer.GetArmour(user.Id), user.Id);
+            var shoot = await gunFire.CalledShot(DataAccessLayer);
+            await ReplyAsync(shoot);
         }
 
         /// <summary>
@@ -103,7 +115,7 @@
         [SlashCommand("стрелять", "Особенности оружия")]
         public async Task FireWeapon(string wType)
         {
-            var gunFire = new SkarpBot.OnlyWar.FireWeapon(wType);
+            var gunFire = new FireWeapon(wType);
             await ReplyAsync(gunFire.WriteQualitiesFire());
         }
 
@@ -122,7 +134,7 @@
                 return;
             }
 
-            var grenadeThrow = new SkarpBot.OnlyWar.Grenade(accuracy, wType);
+            var grenadeThrow = new Grenade(accuracy, wType);
             await ReplyAsync(grenadeThrow.GrenadeThrow());
         }
 
@@ -134,7 +146,7 @@
         [SlashCommand("бросить", "Особенности гранаты")]
         public async Task GrenadeWeapon(string wType)
         {
-            var grenadeThrow = new SkarpBot.OnlyWar.Grenade(wType);
+            var grenadeThrow = new Grenade(wType);
             await ReplyAsync(grenadeThrow.WriteQualitiesGrenade());
         }
 

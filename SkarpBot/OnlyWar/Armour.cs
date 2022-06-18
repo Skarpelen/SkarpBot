@@ -7,8 +7,9 @@
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Armour"/> class.
+        /// Конструктор брони.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">Тип брони.</param>
         public Armour(string type)
         {
             switch (type)
@@ -47,9 +48,15 @@
             }
         }
 
-        internal int Damage(int point, int roll, int pen)
+        public int Damage(int point, int[] stats, int pen)
         {
-            return GetDamage(point, roll, pen);
+            Random random = new Random();
+            int roll = 0;
+            for (int i = 0; i < stats[0]; i++)
+            {
+                roll += random.Next(11);
+            }
+            return GetDamage(point, roll + stats[1], pen);
         }
 
         private int GetDamage(int point, int roll, int pen)
@@ -69,9 +76,7 @@
             return rnd1.Next(11) + add;
         }
 
-        // ggggggggggg
-
-        public int GetDamage(string hitPoint, int roll, int pen)
+        /*public int GetDamage(string hitPoint, int roll, int pen)
         {
             int[] buf = new int[4];
             for (int i = 0; i < human.Length; i++)
@@ -93,7 +98,7 @@
                 "левую ногу" => ZeroTurn(roll - buf[3]),
                 _ => 0,
             };
-        }
+        }*/
 
         private static int ZeroTurn(int num)
         {

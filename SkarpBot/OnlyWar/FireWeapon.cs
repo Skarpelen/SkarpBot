@@ -1,43 +1,13 @@
-﻿using SkarpBot.Data;
-
-namespace SkarpBot.OnlyWar
+﻿namespace SkarpBot.OnlyWar
 {
+    using SkarpBot.Data;
+
     partial class FireWeapon : Weapon
     {
-        public void Shoot(out int point, out int dmg)
-        {
-            Armour armour = new (AType);
-            switch (WClass)
-            {
-                case 0:
-                    point = HitPointCalculate(Point());
-                    dmg = armour.Damage(point, dmgInd, pen);
-                    break;
-
-                default:
-                    point = -1;
-                    dmg = -1;
-                    break;
-            }
-        }
-
-        private int Point()
-        {
-            Random rnd = new ();
-            int value = rnd.Next(100);
-            int hitPoint = (value / 10) + ((value % 10) * 10);
-            int ballisticSkill = accuracy + buffs[0, aim] + buffs[1, range] + buffs[2, mode];
-            degree = (ballisticSkill - value) / 10.0;
-
-            return hitPoint;
-        }
-
-        // gggggggggggggg
-
         public async Task<string> Shoot(DataAccessLayer dataAccessLayer)
         {
-            Armour armr = new (AType);
-            switch (WClass)
+            Armour armr = new (aType);
+            switch (wClass)
             {
                 case 0:
                     int BallisticSkill = GetValue();
@@ -47,28 +17,29 @@ namespace SkarpBot.OnlyWar
 
                 case 1:
                     hitIndex = 3;
-                    return "Выстрел успешно поразил " + CalculateDmg(armr, hitPoints, hitIndex,
-                    Convert.ToInt32(Math.Floor(degree)));
+                    var CalcDmg = await CalculateDmg(armr, hitPoints, hitIndex, Convert.ToInt32(Math.Floor(degree)), dataAccessLayer);
+                    return "Выстрел успешно поразил " + CalcDmg;
 
                 default:
                     return "Ошибка в классе оружия";
             }
         }
 
-        public string CalledShot()
+        public async Task<string> CalledShot(DataAccessLayer dataAccessLayer)
         {
-            Armour armr = new(AType);
+            Armour armr = new(aType);
             if (GetIndex() == -1)
             {
                 return "Некорректная часть тела";
             }
 
-            switch (WClass)
+            switch (wClass)
             {
                 case 0:
                     hitIndex = GetIndex();
                     int BallisticSkill = GetValue();
-                    return ""; //Output(armr, BallisticSkill);
+                    var output = await Output(armr, BallisticSkill, dataAccessLayer);
+                    return output;
 
                 case 1:
                     return "Невозможно совершить прицельный выстрел из этого оружия";
@@ -140,7 +111,7 @@ namespace SkarpBot.OnlyWar
 
         public async Task<string> CalculateDmg(Armour armr, string[] hitPoint, int index, int lim, DataAccessLayer dataAccessLayer)
         {
-            int roll = armr.GetDamage(hitPoint[index], RollDmg(dmgInd), pen);
+            int roll = armr.Damage(index, dmgStats, pen);
             await dataAccessLayer.ChangeHp(targetId, index, roll);
             string result = ", нанеся цели " + roll + " урона.\n";
             if ((mode == 0 || mode == 3) && shots[mode] != 0)
@@ -164,7 +135,7 @@ namespace SkarpBot.OnlyWar
                         k = 6;
                     }
 
-                    roll = armr.GetDamage(hitPoint[hits[i - k]], RollDmg(dmgInd), pen);
+                    roll = armr.Damage(hits[i - k], dmgStats, pen);
                     await dataAccessLayer.ChangeHp(targetId, hits[i - k], roll);
                     result += "Дополнительное попадание в " + hitPoint[hits[i - k]] + " с уроном " +
                         roll + "\n";
@@ -179,41 +150,6 @@ namespace SkarpBot.OnlyWar
             }
         }
 
-        public string CalculateDmg(Armour armr, string[] hitPoint, int index, int lim)
-        {
-            string result = ", нанеся цели " + armr.GetDamage(hitPoint[index], RollDmg(dmgInd), pen) + " урона.\n";
-            if ((mode == 0 || mode == 3) && shots[mode] != 0)
-            {
-                return result + "Степень успеха: " + degree;
-            }
-
-            if (lim > shots[mode])
-            {
-                lim = shots[mode];
-            }
-
-            int[] hits = Multiple(index);
-            int k = 0;
-            if (shots[mode] != 0)
-            {
-                for (int i = 1; i <= lim; i++)
-                {
-                    if (i == 6)
-                    {
-                        k = 6;
-                    }
-
-                    result += "Дополнительное попадание в " + hitPoint[hits[i - k]] + " с уроном " +
-                        armr.GetDamage(hitPoint[hits[i - k]], RollDmg(dmgInd), pen) + "\n";
-                }
-
-                result += "Степень успеха: " + degree;
-                return result;
-            }
-            else
-                return _ = "ошибка";
-        }
-
         public bool CheckMode(int mode)
         {
             if (shots[mode] == 0)
@@ -222,27 +158,6 @@ namespace SkarpBot.OnlyWar
             }
 
             return false;
-        }
-
-        public void FillUp()
-        {
-            int k = 0;
-            for (int i = 0; i < qualities.Length; i++)
-            {
-                if (qualities[i])
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            while (degree - 2 > 0 & k < 2)
-                            {
-                                dmgInd += RollDmg(0);
-                            }
-
-                            break;
-                    }
-                }
-            }
         }
     }
 }

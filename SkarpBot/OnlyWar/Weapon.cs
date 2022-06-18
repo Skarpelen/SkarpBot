@@ -2,27 +2,38 @@
 {
     public class Weapon
     {
+        public bool error = false;
+        public double degree;
+        protected readonly string[] hitPoints = new string[] { "голову", "торс", "левую руку", "правую руку", "левую ногу", "правую ногу" };
         protected int accuracy;
         protected int aim;
         protected int range;
         protected int rate;
         protected int mode;
         protected int value;
-        protected int hitValue;
-        protected int hitIndex;
-        private string aType;
-        protected int[,] buffs = new int[,] { { 10, 0, 20, 0 }, { 10, 0, -10, -20 }, { 20, 10, 0, -20 } };
 
-        protected bool[] qualities = new bool[7];
+        /// <summary>
+        /// Перевернутое число д100 для определения попадания.
+        /// </summary>
+        protected int hitValue;
+
+        /// <summary>
+        /// Номер части тела, куда было нанесено повреждение.
+        /// </summary>
+        protected int hitIndex;
+
+        protected int[,] buffs = new int[,] { { 10, 0, 20, 0 }, { 10, 0, -10, -20 }, { 20, 10, 0, -20 } };
+        protected int[] dmgStats = new int[2];
+        protected bool[] qualities = new bool[8];
         protected int pen;
-        protected int dmgInd;
         protected int x;
         protected string[]? stats;
-        public bool error = false;
-        public double degree;
+        protected string aType;
 
-        protected string AType { get => aType; set => aType = value; }
-
+        /// <summary>
+        /// Вычисляет глобальные переменные ролла д100, перевернутого д100 и степень успеха.
+        /// </summary>
+        /// <returns>Итоговая меткость после всех факторов.</returns>
         protected int GetValue()
         {
             Random rnd = new();
@@ -39,6 +50,21 @@
             return rnd1.Next(11) + add;
         }
 
+        protected static int RollDmg(int[] stats)
+        {
+            Random rnd1 = new();
+            int result = 0;
+            for (int i = 0; i < stats[0]; i++)
+            {
+                result += rnd1.Next(11);
+            }
+            return result + stats[1];
+        }
+
+        /// <summary>
+        /// Информация о выбранном огнестрельном оружии.
+        /// </summary>
+        /// <returns>Строку для дискорда.</returns>
         public string WriteQualitiesFire()
         {
             string[] qualitiesList = GetQualities();
@@ -47,7 +73,7 @@
                 return "Для проверки характеристик огнестрельного оружия используйте ?стрелять {название}, а для гранат ?бросать {название}";
             }
 
-            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция стрельбы: \r-{stats[1]} м\nПараметр урона: \r-{dmgInd}\nВместимость магазина: \r-{stats[2]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
+            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция стрельбы: \r-{stats[1]} м\nПараметр урона: \r-{dmgStats[0]}к10 + {dmgStats[1]}\nВместимость магазина: \r-{stats[2]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
             string buf = string.Empty;
             for (int i = 0; i < qualitiesList.Length; i++)
             {
@@ -61,6 +87,10 @@
             return result;
         }
 
+        /// <summary>
+        /// Информация о выбранной гранате.
+        /// </summary>
+        /// <returns>Строку для дискорда.</returns>
         public string WriteQualitiesGrenade()
         {
             string[] qualitiesList = GetQualities();
@@ -69,7 +99,7 @@
                 return "Для проверки характеристик огнестрельного оружия используйте ?стрелять {название}, а для гранат ?бросать {название}";
             }
 
-            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция броска: \r-{stats[1]} м\nФормула урона: \r-{stats[2]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
+            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция броска: \r-{stats[1]} м\nФормула урона: \r-{dmgStats[0]}к10 + {dmgStats[1]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
             string buf = string.Empty;
             for (int i = 0; i < qualitiesList.Length; i++)
             {
@@ -83,6 +113,37 @@
             return result;
         }
 
+        /// <summary>
+        /// Информация о выбранном оружии ближнего боя.
+        /// </summary>
+        /// <returns>Строку для дискорда.</returns>
+        public string WriteQualitiesMelee()
+        {
+            string[] qualitiesList = GetQualities();
+            if (error)
+            {
+                return "Для проверки характеристик огнестрельного оружия используйте ?стрелять {название}, а для гранат ?бросать {название}";
+            }
+
+            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция атаки: \r-{stats[1]} м\nУрон: \r-{dmgStats[0]}к10 + {dmgStats[1]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
+            string buf = string.Empty;
+            for (int i = 0; i < qualitiesList.Length; i++)
+            {
+                if (qualities[i])
+                {
+                    buf += qualitiesList[i];
+                }
+            }
+
+            result += buf == string.Empty ? "Особенностей нет" : buf;
+            return result;
+        }
+
+        /// <summary>
+        /// Переводит перевернутое значение д100 в номер части тела.
+        /// </summary>
+        /// <param name="hitValue">Перевернутое д100.</param>
+        /// <returns>Номер части тела в которое попали.</returns>
         protected static int HitPointCalculate(int hitValue)
         {
             if (hitValue > 0 & hitValue < 11)
@@ -122,6 +183,10 @@
             return 6;
         }
 
+        /// <summary>
+        /// Хранилище всех доступных особенностей оружия.
+        /// </summary>
+        /// <returns>Массив строк со всеми данными.</returns>
         private string[] GetQualities()
         {
             string[] qualitiesList = new string[]
@@ -160,6 +225,12 @@
                 " для этого оружия урон. Укрытия не спасает персонажей от атак распыляющим оружием (если только оно не скрывает персонажа" +
                 " полностью). Поскольку при стрельбе из распыляющего оружия не бросается тест Дальнего боя, считается, что любое попадание из " +
                 "него приходится в торс цели.```",
+
+                "```Эзотерическое.\nЭзотерическое оружие уникально тем, что работает в полную силу лишь в руках эхотерика, чья магия наполняет, " +
+                "казалось бы, обычный клинок устрашающей мощью. В руках обычного человека оружие ощущается тяжелым и неэффективным в бою. В руках эзотерика" +
+                "оружие получает + к урону и бронебойности, в зависимости от рейтинга силы владельца. Кроме того, всякий раз, когда эзотерик наносит урон противнику, " +
+                "он может предпринять действие «Сотворение психосилы». В случае успеха этого теста, владелец психосилового оружия наносит врагу дополнительно 1к10 единиц " +
+                "энергетического урона```",
             };
 
             return qualitiesList;
