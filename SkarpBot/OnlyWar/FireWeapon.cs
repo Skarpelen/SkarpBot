@@ -90,14 +90,15 @@
             }
             else
             {
-                return $"Выстрел{((mode != 0 & mode != 3) ? "ы" : string.Empty)} прош{((mode != 0 & mode != 3) ? "ли" : "ёл")} мимо цели\nСтепень успеха: {degree}";
+                return $"Выстрел{((mode != 0 & mode != 3) ? "ы" : string.Empty)} прош{((mode != 0 & mode != 3) ? "ли" : "ёл")} мимо цели\nПотрачен" +
+                    $"{((mode != 0 & mode != 3) ? "о" : string.Empty)} {shots[mode]} патрон{((mode != 0 & mode != 3) ? "ов" : string.Empty)}\nСтепень успеха: {degree}";
             }
         }
 
         private static int[] Multiple(int ind)
         {
-            int[,] hit = new int[,] { { 0, 0, 2, 3, 1, 3 }, { 1, 1, 3, 0, 3, 2 }, { 2, 2, 3, 0, 3, 2 },
-                { 3, 3, 1, 0, 2, 3 }, { 4, 4, 3, 1, 0, 3 }, { 5, 5, 3, 1, 0, 3 },
+            int[,] hit = new int[,] { { 0, 0, 2, 1, 3, 1 }, { 1, 1, 3, 0, 2, 1 }, { 2, 2, 1, 0, 1, 3 },
+                { 3, 3, 1, 0, 1, 2 }, { 4, 4, 1, 2, 0, 1 }, { 5, 5, 1, 3, 0, 1 },
             };
             int[] res = new int[6];
 
@@ -111,24 +112,30 @@
 
         public async Task<string> CalculateDmg(Armour armr, string[] hitPoint, int index, int lim, DataAccessLayer dataAccessLayer)
         {
-            int roll = armr.Damage(index, dmgStats, pen);
-            await dataAccessLayer.ChangeHp(targetId, index, roll);
-            string result = ", нанеся цели " + roll + " урона.\n";
-            if ((mode == 0 || mode == 3) && shots[mode] != 0)
-            {
-                return result + "Степень успеха: " + degree;
-            }
-
-            if (lim > shots[mode])
-            {
-                lim = shots[mode];
-            }
-
-            int[] hits = Multiple(index);
-            int k = 0;
             if (shots[mode] != 0)
             {
-                for (int i = 1; i <= lim; i++)
+                int sniper = 0;
+                if (qualities[0] || aim == 0)
+                {
+                    sniper = (int)degree;
+                }
+
+                int roll = armr.Damage(index, dmgStats, pen, sniper);
+                await dataAccessLayer.ChangeHp(targetId, index, roll);
+                string result = ", нанеся цели " + roll + " урона.\n";
+                if ((mode == 0 || mode == 3) && shots[mode] != 0)
+                {
+                    return result + "Потрачен 1 патрон.\nСтепень успеха: " + degree;
+                }
+
+                if (lim > shots[mode])
+                {
+                    lim = shots[mode];
+                }
+
+                int[] hits = Multiple(index);
+                int k = 0;
+                for (int i = 1; i < lim; i++)
                 {
                     if (i == 6)
                     {
@@ -141,7 +148,7 @@
                         roll + "\n";
                 }
 
-                result += "Степень успеха: " + degree;
+                result += $"Потрачено {shots[mode]} патронов\nСтепень успеха: " + degree;
                 return result;
             }
             else

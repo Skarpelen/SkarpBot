@@ -15,12 +15,13 @@
         /// <param name="m">Режим стрельбы.</param>
         /// <param name="type">Тип оружия.</param>
         /// <param name="atype">Тип брони противника.</param>
+        /// <param name="id">Дискорд айди цели.</param>
 
-        public FireWeapon(int accuracy, int m, string type, string atype, ulong id)
+        public FireWeapon(int accuracy, int m, string type, string atype, ulong id, int aim)
         {
             mode = m;
             this.accuracy = accuracy;
-            aim = 1;
+            this.aim = aim;
             range = 1;
             wClass = 0;
             aType = atype;
@@ -28,7 +29,7 @@
             switch (type)
             {
                 case "пистолет":
-                    pen = 0;
+                    pen = 4;
                     shots = new int[] { 1, 2, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = -2;
@@ -53,6 +54,7 @@
                     shots = new int[] { 1, 0, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 5;
+                    qualities[0] = true;
                     break;
 
                 case "пулемет":
@@ -70,6 +72,35 @@
                     wClass = 1;
                     break;
 
+                case "бластер":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 10;
+                    break;
+
+                case "ббпп":
+                    pen = 5;
+                    shots = new int[] { 1, 3, 7 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 1;
+                    break;
+
+                case "игольный":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 0;
+                    qualities[0] = true;
+                    break;
+
+                case "эзопистолет":
+                    pen = 4;
+                    shots = new int[] { 1, 2, 0 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 2;
+                    break;
+
                 default:
                     error = true;
                     break;
@@ -85,12 +116,12 @@
         /// <param name="aim">Место куда целятся.</param>
         /// <param name="atype">Броня противника.</param>
         /// <param name="id">Дискорд айди противника.</param>
-        public FireWeapon(int accuracy, string type, string aim, string atype, ulong id)
+        public FireWeapon(int accuracy, string type, string atype, ulong id, string aimpoint, int aim)
         {
-            aimPoint = aim;
+            aimPoint = aimpoint.Substring(0, aimpoint.Length - 1);
             mode = 3;
             this.accuracy = accuracy;
-            this.aim = 1;
+            this.aim = aim;
             range = 1;
             wClass = 0;
             aType = atype;
@@ -98,7 +129,7 @@
             switch (type)
             {
                 case "пистолет":
-                    pen = 0;
+                    pen = 4;
                     shots = new int[] { 1, 2, 0, 1 };
                     dmgStats[0] = 1;
                     dmgStats[1] = -2;
@@ -106,38 +137,75 @@
 
                 case "автомат":
                     pen = 2;
-                    shots = new int[] { 1, 3, 10, 1 };
+                    shots = new int[] { 1, 3, 10, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 2;
                     break;
 
                 case "дробовик":
                     pen = 0;
-                    shots = new int[] { 1, 3, 0, 1 };
+                    shots = new int[] { 1, 3, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 8;
                     break;
 
                 case "винтовка":
                     pen = 6;
-                    shots = new int[] { 1, 0, 0, 1 };
+                    shots = new int[] { 1, 0, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 5;
+                    qualities[0] = true;
                     break;
 
                 case "пулемет":
                     pen = 3;
-                    shots = new int[] { 0, 0, 8, 1 };
+                    shots = new int[] { 0, 0, 8 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 4;
                     break;
 
                 case "огнемет":
-                    pen = 4;
+                    pen = 400;
                     shots = new int[] { 1, 0, 0 };
                     dmgStats[0] = 1;
-                    dmgStats[1] = 5;
+                    dmgStats[1] = 50;
                     wClass = 1;
+                    break;
+
+                case "бластер":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0, 1 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 10;
+                    break;
+
+                case "ббпп":
+                    pen = 5;
+                    shots = new int[] { 1, 3, 7, 1 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 1;
+                    break;
+
+                case "игольный":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0, 1 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 0;
+                    qualities[0] = true;
+                    break;
+
+                case "эзопистолет":
+                    pen = 4;
+                    shots = new int[] { 1, 2, 0, 1 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 2;
+                    break;
+
+                case "эзопистолетд":
+                    pen = 6;
+                    shots = new int[] { 1, 2, 0, 1 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 5;
                     break;
 
                 default:
@@ -156,7 +224,7 @@
             switch (type)
             {
                 case "пистолет":
-                    pen = 0;
+                    pen = 4;
                     shots = new int[] { 1, 2, 0 };
                     dmgStats[0] = 1;
                     dmgStats[1] = -2;
@@ -205,6 +273,44 @@
                     stats = new string[] { "Тяжёлое", "30", "10", "45" };
                     qualities[5] = true;
                     qualities[6] = true;
+                    break;
+
+                case "бластер":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0 };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 10;
+                    stats = new string[] { "Пистолет", "10", "3", "3" };
+                    qualities[8] = true;
+                    qualities[9] = true;
+                    break;
+
+                case "ббпп":
+                    pen = 5;
+                    shots = new int[] { 1, 3, 7 };
+                    stats = new string[] { "Пистолет", "50", "24", "4" };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 1;
+                    break;
+
+                case "игольный":
+                    pen = 0;
+                    shots = new int[] { 1, 0, 0 };
+                    stats = new string[] { "Пистолет", "30", "6", "1.5" };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 0;
+                    qualities[0] = true;
+                    qualities[10] = true;
+                    x = 5;
+                    break;
+
+                case "эзопистолет":
+                    pen = 4;
+                    shots = new int[] { 1, 2, 0 };
+                    stats = new string[] { "Пистолет", "30", "10", "4" };
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 2;
+                    qualities[7] = true;
                     break;
 
                 default:

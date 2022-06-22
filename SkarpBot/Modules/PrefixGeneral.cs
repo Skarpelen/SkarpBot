@@ -4,7 +4,6 @@
     using System.Text.RegularExpressions;
     using Discord;
     using Discord.Commands;
-    using Discord.WebSocket;
     using SkarpBot.Data;
     using SkarpBot.OnlyWar;
 
@@ -31,9 +30,9 @@
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("ping")]
-        public async Task PingAsync(IUser user)
+        public async Task PingAsync()
         {
-            await ReplyAsync("Pong! " + user.Username + " " + user.Id);
+            await ReplyAsync("Pong! ");
         }
 
         [Command("регистрация")]
@@ -69,7 +68,7 @@
 
         [Command("префикс")]
         [RequireOwner]
-        public async Task PrefixAsync(string prefix = null)
+        public async Task PrefixAsync(string? prefix = null)
         {
             if (prefix == null)
             {
@@ -131,8 +130,8 @@
         /// <param name="user">Цель.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("стрелять")]
-        [Alias("стрельба", "с")]
-        public async Task FireWeapon(int accuracy, int mode, string wType, IUser user)
+        [Alias("стрельба", "с", "c")]
+        public async Task FireWeapon(int accuracy, int mode, string wType, IUser user, int aim = 1)
         {
             if (mode > 2 || mode < 0 || accuracy < 0)
             {
@@ -140,7 +139,7 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, mode, wType, DataAccessLayer.GetArmour(user.Id), user.Id);
+            var gunFire = new FireWeapon(accuracy, mode, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aim);
             var shoot = await gunFire.Shoot(DataAccessLayer);
             await ReplyAsync(shoot);
 
@@ -158,8 +157,8 @@
         /// <param name="aimPoint">Куда надо попасть.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("стрелять")]
-        [Alias("стрельба", "с")]
-        public async Task FireWeapon(int accuracy, string wType, string aimPoint, IUser user)
+        [Alias("стрельба", "с", "c", "прицел")]
+        public async Task FireWeapon(int accuracy, string wType, IUser user, string aimpoint, int aim = 1)
         {
             if (accuracy < 0)
             {
@@ -167,7 +166,7 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, wType, aimPoint, DataAccessLayer.GetArmour(user.Id), user.Id);
+            var gunFire = new FireWeapon(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aimpoint, aim);
             var shoot = await gunFire.CalledShot(DataAccessLayer);
             await ReplyAsync(shoot);
         }
@@ -178,7 +177,7 @@
         /// <param name="wType">Оружие для проверки.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Command("стрелять")]
-        [Alias("стрельба", "с")]
+        [Alias("стрельба", "с", "c")]
         public async Task FireWeapon(string wType)
         {
             var gunFire = new FireWeapon(wType);
@@ -219,6 +218,7 @@
         }
 
         [Command("резать")]
+        [Alias("р")]
         public async Task MeleeWeapon(int accuracy, string wType, IUser user)
         {
             var knifePower = new Melee(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id);
@@ -227,6 +227,7 @@
         }
 
         [Command("резать")]
+        [Alias("р")]
         public async Task MeleeWeapon(string wType)
         {
             var knifePower = new Melee(wType);
@@ -243,24 +244,10 @@
             await OWInfo();
         }
 
-        /// <summary>
-        /// Какает.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Command("какаха")]
-        public async Task Poop(int len)
+        [Command("механ")]
+        public async Task Mech()
         {
-            for (int i = 0; i < len; i++)
-            {
-                await ReplyAsync(Congrats());
-                Thread.Sleep(1000);
-            }
-        }
-
-        [Command("клоуны")]
-        public async Task Clowns()
-        {
-            await ReplyAsync("🤡🤡🤡🤡🤡🤡Гифко-клоуны в чате 🤡🤡🤡🤡🤡🤡🤡");
+            await OWMech();
         }
 
         [Command("эмбед")]
@@ -273,42 +260,27 @@
         {
             var embed = new EmbedBuilder()
                 .WithTitle("Как использовать бота")
-                .AddField("Стандартная стрельба", "?стрелять {меткость} {режим} {оружие} {броня противника}")
-                .AddField("Прицельная стрельба", "?стрелять {меткость} {оружие} {броня противника} {желаемое место попадания}")
-                .AddField("Получить информацию об **огнестрельном** оружии", "?стрелять {оружие}")
-                .AddField("Стандартный бросок метательного вооружения", "?стрелять {меткость} {граната}")
-                .AddField("Получить информацию о метательном вооружении", "?бросать {граната}\n")
-                .AddField("Оружие", "Пистолет\nАвтомат\nДробовик\nПулемёт\nВинтовка\nОгнемёт", true)
+                .AddField("Стрельба", "`-стрелять {меткость} {режим} {оружие} {слап цели}` - стандартная стрельба\n`-стрелять {меткость} {оружие} {желаемое место попадания} {слап цели}` - прицельная стрельба\n`-стрелять {оружие}` - получить информацию об оружии\n\nДля увеличения меткости в конце команд для стрельбы можно выставить \"0\"\n")
+                .AddField("Гранаты", "`-бросать {меткость} {граната}` - бросок гранаты\n`-бросать {граната}` - получить информацию о гранате\n")
+                .AddField("Ближний бой", "`-резать {меткость} {оружие} {слап цели}` - атака оружием ближнего боя\n`-резать {оружие}` - получить информацию об оружии\n")
+                .AddField("Взаимодействия с хит поинтами", "`-хп` - показывает ваши текущие хп\n`-установить {номер части тела} {значение}` - прибавляет к указанной части тела то количество хп, которое указано в значении\n")
+                .AddField("Дополнительные команды", "`-инфо` - вызывает эту таблицу\n`-механ` - показывает дополнительные механики боя\n\n")
+                .AddField("Стандартное оружие", "Пистолет\nАвтомат\nДробовик\nПулемёт\nВинтовка\nОгнемёт", true)
                 .AddField("Гранаты", "Осколочная\nЗажигательная\nСветошумовая\nГазовая\nТактическая\nДымовая", true)
                 .Build();
 
             await ReplyAsync(embed: embed);
-
-            //return "```diff\nПеречень всех команд для стрельбы:\n+?стрелять {меткость} {режим} {оружие} {броня противника}" +
-            //    "\n+?стрелять {меткость} {оружие} {броня противника} {желаемое место попадания}\n+?стрелять {оружие}\n\n" +
-            //    "+?бросить {меткость} {граната}\n+?бросить {граната}\n\nИмеющиеся наборы оружия и гранат на данный момент:\n" +
-            //    "-Оружие                    Гранаты\r-Пистолет                  Осколочная\r-Автомат                   Зажигательная\r-Дробовик                  Светошумовая\r-Пулемет                   Газовая\r-Винтовка                  Тактическая\r-Огнемет                   Дымовая" +
-            //    "```";
         }
 
-        private string Congrats()
+        private async Task OWMech()
         {
-            Random rnd = new Random();
-            string[] congrats = { "https://media.discordapp.net/attachments/402838262227664901/983134004263931934/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134004561739817/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134004792418375/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134005060841563/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134005362827274/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134005606109264/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983134721259237467/unknown.png",
-                                  "ты кто",
-                                  "приветик, сдр тебя",
-                                  "воняеш",
-                                  "https://cdn.discordapp.com/attachments/886737795597623327/983133488838479904/unknown.png",
-                                  "https://media.discordapp.net/attachments/402838262227664901/983140044028149830/unknown.png"
-            };
+            var embed = new EmbedBuilder()
+                .WithTitle("Дополнительные механики боя")
+                .AddField("Огонь на подавление", "Персонаж должен использовать дистанционное оружие, способное вести огонь короткими или длинными очередями.Заявив огонь на " + "подавление, персонаж выбирает область, которую он будет подавлять огнѐм. Затем персонаж производит выстрел выбранной очередью." + "Дополнительное попадание в таком случае высчитывается за каждые 2 ступени успеха, а не за 1. Цели, попавшие под обстрел и не " + "прошедшие тест, получают -20 к меткости", true)
+                .AddField("Осторожная атака", "Персонаж действует осторожно и продуманно, в любой миг готовясь уйти в оборону. В этом ходу он получает штраф -10 на тесты Ближнего или Дальнего боя, однако противники в следующем ходу так же будут получать -10 к своим тестам направленным против персонажа.", true)
+                .Build();
 
-            return congrats[rnd.Next(12)];
+            await ReplyAsync(embed: embed);
         }
 
         private static string FrenchTime(string msg)

@@ -9,7 +9,7 @@ namespace SkarpBot.Data
         public async Task Register(ulong id, string name)
         {
             using var context = _contextFactory.CreateDbContext();
-            context.Add(new PersonHP { Id = id, Head = 10, Body = 25, LHand = 15, RHand = 15, LFoot = 18, RFoot = 18 });
+            context.Add(new PersonHP { Id = id, Head = 18, Body = 33, LHand = 23, RHand = 23, LFoot = 26, RFoot = 26 });
             context.Add(new PersonArmour { Id = id, Name = name });
             await context.SaveChangesAsync();
         }
@@ -23,12 +23,12 @@ namespace SkarpBot.Data
                 .FindAsync(id);
             if (context.Persons.Any(x => x.Id == id))
             {
-                person.Head = 10;
-                person.Body = 25;
-                person.LHand = 15;
-                person.RHand = 15;
-                person.RFoot = 18;
-                person.LFoot = 18;
+                person.Head = 18;
+                person.Body = 33;
+                person.LHand = 23;
+                person.RHand = 23;
+                person.RFoot = 26;
+                person.LFoot = 26;
                 armour.Name = armourName;
 
                 await context.SaveChangesAsync();
@@ -91,12 +91,12 @@ namespace SkarpBot.Data
                 .Find(id);
 
             string result = $"Текущее состояние <@{id}>\n" +
-                $"\n**Голова: **{person.Head / 10.0 * 100.0}%" +
-                $"\n**Тело: **{person.Body / 25.0 * 100.0}%" +
-                $"\n**Левая рука: **{person.LHand / 15.0 * 100.0}%" +
-                $"\n**Правая рука: **{person.RHand / 15.0 * 100.0}%" +
-                $"\n**Левая нога: **{person.LFoot / 18.0 * 100.0}%" +
-                $"\n**Правая нога: **{person.RFoot / 18.0 * 100.0}%";
+                $"\n**Голова: **{person.Head / 18.0 * 100.0}%" +
+                $"\n**Тело: **{person.Body / 33.0 * 100.0}%" +
+                $"\n**Левая рука: **{person.LHand / 23.0 * 100.0}%" +
+                $"\n**Правая рука: **{person.RHand / 23.0 * 100.0}%" +
+                $"\n**Левая нога: **{person.LFoot / 26.0 * 100.0}%" +
+                $"\n**Правая нога: **{person.RFoot / 26.0 * 100.0}%";
 
             return result;
         }

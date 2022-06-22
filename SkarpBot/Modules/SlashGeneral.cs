@@ -102,9 +102,9 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, wType, aimPoint, DataAccessLayer.GetArmour(user.Id), user.Id);
+            /*var gunFire = new FireWeapon(accuracy, wType, aimPoint, DataAccessLayer.GetArmour(user.Id), user.Id);
             var shoot = await gunFire.CalledShot(DataAccessLayer);
-            await ReplyAsync(shoot);
+            await ReplyAsync(shoot);*/
         }
 
         /// <summary>

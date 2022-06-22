@@ -41,7 +41,7 @@
 
                 case "газовая":
                     EffectType = 0;
-                    dmgStats[0] = 3;
+                    dmgStats[0] = 2;
                     dmgStats[1] = 0;
                     break;
 
@@ -61,6 +61,8 @@
             switch (type)
             {
                 case "осколочная":
+                    dmgStats[0] = 2;
+                    dmgStats[1] = 0;
                     EffectType = 0;
                     pen = 0;
                     stats = new string[] { "Метательное", "15", "2к10", "0.5" };
@@ -69,6 +71,8 @@
                     break;
 
                 case "зажигательная":
+                    dmgStats[0] = 1;
+                    dmgStats[1] = 3;
                     EffectType = 0;
                     pen = 6;
                     stats = new string[] { "Метательное", "15", "1к10+3", "0.5" };
@@ -101,9 +105,11 @@
                     break;
 
                 case "газовая":
+                    dmgStats[0] = 2;
+                    dmgStats[1] = 0;
                     EffectType = 1;
                     pen = 100;
-                    stats = new string[] { "Метательное", "15", "3к10", "0.5" };
+                    stats = new string[] { "Метательное", "15", "2к10", "0.5" };
                     qualities[3] = true;
                     x = 3;
                     break;
