@@ -137,7 +137,7 @@
 
                 case "автомат":
                     pen = 2;
-                    shots = new int[] { 1, 3, 10, 0 };
+                    shots = new int[] { 1, 3, 10, 1 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 2;
                     break;
