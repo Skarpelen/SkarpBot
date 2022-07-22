@@ -11,6 +11,9 @@
         /// <param name="type"></param>
         public Grenade(int accuracy, string type)
         {
+            mode = 0;
+            aim = false;
+            range = 1;
             Type = type;
             this.accuracy = accuracy;
             switch (type)
@@ -121,7 +124,9 @@
         }
 
         public int EffectType { get => effectType; set => effectType = value; }
+
         public string Type { get => type; set => type = value; }
+
         public string GrenadeThrow()
         {
             if (error)
@@ -129,7 +134,7 @@
                 return "Неверное название гранаты";
             }
 
-            if (GetValue() - value > 0)
+            if (GotHit())
             {
                 return ThrowResult();
             }

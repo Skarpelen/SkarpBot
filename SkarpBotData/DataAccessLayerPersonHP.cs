@@ -9,7 +9,7 @@ namespace SkarpBot.Data
         public async Task Register(ulong id, string name)
         {
             using var context = _contextFactory.CreateDbContext();
-            context.Add(new PersonHP { Id = id, Head = 18, Body = 33, LHand = 23, RHand = 23, LFoot = 26, RFoot = 26 });
+            context.Add(new PersonHP { Id = id, Head = 12, Body = 28, LHand = 17, RHand = 17, LFoot = 20, RFoot = 20 });
             context.Add(new PersonArmour { Id = id, Name = name });
             await context.SaveChangesAsync();
         }
@@ -23,12 +23,12 @@ namespace SkarpBot.Data
                 .FindAsync(id);
             if (context.Persons.Any(x => x.Id == id))
             {
-                person.Head = 18;
-                person.Body = 33;
-                person.LHand = 23;
-                person.RHand = 23;
-                person.RFoot = 26;
-                person.LFoot = 26;
+                person.Head = 12;
+                person.Body = 28;
+                person.LHand = 17;
+                person.RHand = 17;
+                person.RFoot = 20;
+                person.LFoot = 20;
                 armour.Name = armourName;
 
                 await context.SaveChangesAsync();
@@ -84,6 +84,37 @@ namespace SkarpBot.Data
             await context.SaveChangesAsync();
         }
 
+        public async Task CangeFullHp(ulong id, int coeff)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var person = await context.Persons
+                .FindAsync(id);
+
+            person.Head -= coeff;
+            if (person.Head < 0)
+                person.Head = 0;
+
+            person.Body -= coeff;
+            if (person.Body < 0)
+                person.Body = 0;
+
+            person.LHand -= coeff;
+            if (person.LHand < 0)
+                person.LHand = 0;
+
+            person.RHand -= coeff;
+            if (person.RHand < 0)
+                person.RHand = 0;
+
+            person.LFoot -= coeff;
+            if (person.LFoot < 0)
+                person.LFoot = 0;
+
+            person.RFoot -= coeff;
+            if (person.RFoot < 0)
+                person.RFoot = 0;
+        }
+
         public string GetHp(ulong id)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -91,12 +122,12 @@ namespace SkarpBot.Data
                 .Find(id);
 
             string result = $"Текущее состояние <@{id}>\n" +
-                $"\n**Голова: **{person.Head / 18.0 * 100.0}%" +
-                $"\n**Тело: **{person.Body / 33.0 * 100.0}%" +
-                $"\n**Левая рука: **{person.LHand / 23.0 * 100.0}%" +
-                $"\n**Правая рука: **{person.RHand / 23.0 * 100.0}%" +
-                $"\n**Левая нога: **{person.LFoot / 26.0 * 100.0}%" +
-                $"\n**Правая нога: **{person.RFoot / 26.0 * 100.0}%";
+                $"\n**Голова: **{person.Head / 12.0 * 100.0}%" +
+                $"\n**Тело: **{person.Body / 28.0 * 100.0}%" +
+                $"\n**Левая рука: **{person.LHand / 17.0 * 100.0}%" +
+                $"\n**Правая рука: **{person.RHand / 17.0 * 100.0}%" +
+                $"\n**Левая нога: **{person.LFoot / 20.0 * 100.0}%" +
+                $"\n**Правая нога: **{person.RFoot / 20.0 * 100.0}%";
 
             return result;
         }

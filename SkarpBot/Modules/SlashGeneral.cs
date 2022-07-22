@@ -26,7 +26,7 @@
 
         // You can use a number of parameter types in you Slash Command handlers (string, int, double, bool, IUser, IChannel, IMentionable, IRole, Enums) by default. Optionally,
         // you can implement your own TypeConverters to support a wider range of parameter types. For more information, refer to the library documentation.
-        // Optional method parameters(parameters with a default value) also will be displayed as optional on Discord.
+        // Optional method parameters(parameters with a default d100Value) also will be displayed as optional on Discord.
 
         // [Summary] lets you customize the name and the description of a parameter
         [SlashCommand("echo", "Repeat the input")]
@@ -81,6 +81,17 @@
                 await userMessage.PinAsync();
                 await RespondAsync(":white_check_mark: Successfully pinned message!");
             }
+        }
+
+        [SlashCommand("join", "jidsda")]
+        public async Task JoinChannel(IVoiceChannel channel = null)
+        {
+            // Get the audio channel
+            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
+            if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
+
+            // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
+            var audioClient = await channel.ConnectAsync();
         }
 
         [SlashCommand("хп", "Выдает хп из бд")]
@@ -146,9 +157,9 @@
         /// <param name="len">Количество слапов.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [SlashCommand("расстрелять", "Почувствуй себя НКВДшником")]
-        public Task SlapKill(string str, int len)
+        public Task SlapKill(IUser str, int len)
         {
-            Shooting(str, len);
+            Shooting(str.Id, len);
             return Task.CompletedTask;
         }
 
@@ -161,7 +172,7 @@
         /// <param name="user">Цель.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [SlashCommand("стрелять", "Стреляет")]
-        public async Task FireWeapon(int accuracy, int mode, string wType, IUser user, int aim = 1)
+        public async Task FireWeapon(int accuracy, int mode, string wType, IUser user, bool aim = false)
         {
             if (mode > 2 || mode < 0 || accuracy < 0)
             {
@@ -170,7 +181,8 @@
             }
 
             var gunFire = new FireWeapon(accuracy, mode, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aim);
-            var shoot = await gunFire.Shoot(DataAccessLayer);
+            var shoot = await gunFire.RegularShot(DataAccessLayer);
+
             await RespondAsync(shoot);
 
             /*gunFire.Shoot(out point, out dmg);
@@ -184,10 +196,11 @@
         /// <param name="accuracy">Коэфициент меткости.</param>
         /// <param name="wType">Оружие стреляющего.</param>
         /// <param name="user">Цель.</param>
-        /// <param name="aimPoint">Куда надо попасть.</param>
+        /// <param name="aimpoint">Куда надо попасть.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [SlashCommand("прицел", "Прицеливает")]
-        public async Task FireWeapon(int accuracy, string wType, IUser user, string aimpoint, int aim = 1)
+        public async Task FireWeapon(int accuracy, string wType, IUser user, [Choice ("Голова", 0), Choice("Тело", 1), Choice("Левая рука", 2),
+            Choice("Правая рука", 3), Choice("Левая нога", 4), Choice("Правая нога", 5)] int aimpoint, bool aim = false)
         {
             if (accuracy < 0)
             {
@@ -208,7 +221,7 @@
         [SlashCommand("статы", "Статы выбранного оружия")]
         public async Task Stats(string wType)
         {
-            var gun = new FireWeapon(wType);
+            var gun = new FireWeapon(-1, 0, wType, string.Empty, 1, false);
             var grenade = new Grenade(wType);
             var knife = new Melee(wType);
 
@@ -321,7 +334,7 @@
             return $"По французской десятичной системе это будет {Convert.ToInt32(frenchHour)}:{Convert.ToInt32(frenchMin)}";
         }
 
-        private async void Shooting(string msg, int len)
+        private async void Shooting(ulong msg, int len)
         {
             if (len > 50)
             {
@@ -329,18 +342,12 @@
                 return;
             }
 
-            string[] slap = msg.Split();
             string result = string.Empty;
-            for (int i = 0; i < slap.Length; i++)
-            {
-                if (slap[i] == "<@968224677803745290>" | slap[i] == "<@402837633220214784>")
+                if (msg == 968224677803745290 | msg == 402837633220214784)
                 {
                     await RespondAsync("Пососеш, ок?");
                     return;
                 }
-
-                result += slap[i] + " ";
-            }
 
             for (int i = 0, k = 0; i < len; i++, k++)
             {

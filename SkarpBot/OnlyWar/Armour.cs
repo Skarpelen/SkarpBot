@@ -32,6 +32,24 @@
                     human[5] = 3;
                     break;
 
+                case "член":
+                    human[0] = 4;
+                    human[1] = 8;
+                    human[2] = 4;
+                    human[3] = 4;
+                    human[4] = 5;
+                    human[5] = 5;
+                    break;
+
+                case "член++":
+                    human[0] = 7;
+                    human[1] = 11;
+                    human[2] = 7;
+                    human[3] = 7;
+                    human[4] = 8;
+                    human[5] = 8;
+                    break;
+
                 case "хорошая":
                     human[0] = 7;
                     human[1] = 12;
@@ -50,58 +68,13 @@
                     human[5] = 12;
                     break;
 
-                case "гок":
-                    human[0] = 7;
-                    human[1] = 8;
-                    human[2] = 6;
-                    human[3] = 6;
-                    human[4] = 5;
-                    human[5] = 5;
-                    break;
-
-                case "дом":
-                    human[0] = 4;
-                    human[1] = 4;
-                    human[2] = 3;
-                    human[3] = 3;
-                    human[4] = 3;
-                    human[5] = 3;
-                    break;
-
-                case "левантий":
-                    human[0] = 5;
-                    human[1] = 5;
-                    human[2] = 4;
-                    human[3] = 4;
-                    human[4] = 4;
-                    human[5] = 4;
-                    break;
-
-                case "электрик":
-                    human[0] = 7;
-                    human[1] = 7;
-                    human[2] = 6;
-                    human[3] = 6;
-                    human[4] = 5;
-                    human[5] = 5;
-                    break;
-
-                case "крутые":
-                    human[0] = 7;
-                    human[1] = 8;
-                    human[2] = 6;
-                    human[3] = 6;
-                    human[4] = 5;
-                    human[5] = 5;
-                    break;
-
-                case "мстители":
-                    human[0] = 70;
-                    human[1] = 80;
-                    human[2] = 60;
-                    human[3] = 60;
-                    human[4] = 50;
-                    human[5] = 50;
+                case "мститель":
+                    human[0] = 100;
+                    human[1] = 105;
+                    human[2] = 102;
+                    human[3] = 102;
+                    human[4] = 102;
+                    human[5] = 102;
                     break;
 
                 default:
@@ -114,7 +87,6 @@
         {
             Random random = new Random();
             int roll = 0;
-            int additional = 0;
             for (int i = 0; i < stats[0]; i++)
             {
                 roll += random.Next(11);
@@ -122,7 +94,7 @@
 
             if (sniper != 0)
             {
-                for (int i = 1; i < 3 && sniper - 2 * i > 0; i++)
+                for (int i = 1; i < 3 && sniper - (2 * i) > 0; i++)
                 {
                     roll += random.Next(11);
                 }
@@ -142,36 +114,6 @@
             return ZeroTurn(roll - buf);
         }
 
-        protected static int RollDmg(int add)
-        {
-            Random rnd1 = new();
-            return rnd1.Next(11) + add;
-        }
-
-        /*public int GetDamage(string hitPoint, int roll, int pen)
-        {
-            int[] buf = new int[4];
-            for (int i = 0; i < human.Length; i++)
-            {
-                buf[i] = human[i] - pen;
-                if (buf[i] < 0)
-                {
-                    buf[i] = 0;
-                }
-            }
-
-            return hitPoint switch
-            {
-                "голову" => ZeroTurn(roll - buf[0]),
-                "торс" => ZeroTurn(roll - buf[1]),
-                "правую руку" => ZeroTurn(roll - buf[2]),
-                "левую руку" => ZeroTurn(roll - buf[2]),
-                "правую ногу" => ZeroTurn(roll - buf[3]),
-                "левую ногу" => ZeroTurn(roll - buf[3]),
-                _ => 0,
-            };
-        }*/
-
         private static int ZeroTurn(int num)
         {
             if (num < 0)
@@ -180,6 +122,11 @@
             }
 
             return num;
+        }
+
+        public double DefenceDegree()
+        {
+            return human[1] / 20;
         }
     }
 }

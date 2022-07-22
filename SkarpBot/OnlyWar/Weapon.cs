@@ -1,4 +1,6 @@
-﻿namespace SkarpBot.OnlyWar
+﻿using SkarpBot.Data;
+
+namespace SkarpBot.OnlyWar
 {
     public class Weapon
     {
@@ -6,11 +8,15 @@
         public double degree;
         protected readonly string[] hitPoints = new string[] { "голову", "торс", "левую руку", "правую руку", "левую ногу", "правую ногу" };
         protected int accuracy;
-        protected int aim;
+        protected bool aim;
         protected int range;
-        protected int rate;
         protected int mode;
-        protected int value;
+        protected int d100Value;
+        protected double weight;
+        protected int maxRange;
+        protected int maxAmmo;
+        protected int hittedPartID;
+        protected string name;
 
         /// <summary>
         /// Перевернутое число д100 для определения попадания.
@@ -31,16 +37,95 @@
         protected string aType;
 
         /// <summary>
+        /// Есть попадание или нет?.
+        /// </summary>
+        /// <returns>Если есть попадание то возвращает true, так же дает значения переменным degree и hittedPartID.</returns>
+        protected bool GotHit()
+        {
+            Random random = new Random();
+            int d100 = random.Next(100);
+            int buf = accuracy + (aim ? 10 : 0) + buffs[1, range] + buffs[2, mode];
+            degree = (buf - d100) / 10.0;
+
+            if (buf - d100 <= 0)
+            {
+                return false;
+            }
+
+            if (hittedPartID == -1)
+            {
+                hittedPartID = GetHittedPartID(d100);
+            }
+
+            return true;
+        }
+
+        protected int GetHittedPartID(int d100)
+        {
+            int d100Reversed = (d100 / 10) + ((d100 % 10) * 10);
+
+            if (d100Reversed > 0 & d100Reversed < 11)
+            {
+                return 0;
+            }
+
+            if (d100Reversed > 10 & d100Reversed < 31)
+            {
+                if (d100Reversed > 20)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 3;
+                }
+            }
+
+            if (d100Reversed > 30 & d100Reversed < 71)
+            {
+                return 1;
+            }
+
+            if (d100Reversed > 70 & d100Reversed < 100 || d100Reversed == 0)
+            {
+                if (d100Reversed == 0 || d100Reversed > 85)
+                {
+                    return 4;
+                }
+                else
+                {
+                    return 5;
+                }
+            }
+
+            return 6;
+        }
+
+        protected async Task<int> GetFullDamage(Armour armour, ulong targetId, int[] dmgStats, DataAccessLayer dataAccessLayer)
+        {
+            Random random = new Random();
+            int roll = dmgStats[1];
+            for (int i = 0; i < dmgStats[0]; i++)
+            {
+                roll += random.Next(11);
+            }
+
+            double defcoeff = armour.DefenceDegree();
+            await dataAccessLayer.CangeFullHp(targetId, (int)(roll * defcoeff));
+            return (int)(roll * defcoeff);
+        }
+
+        /// <summary>
         /// Вычисляет глобальные переменные ролла д100, перевернутого д100 и степень успеха.
         /// </summary>
         /// <returns>Итоговая меткость после всех факторов.</returns>
         protected int GetValue()
         {
             Random rnd = new();
-            value = rnd.Next(100);
-            hitValue = (value / 10) + ((value % 10) * 10);
-            int ballisticSkill = accuracy + buffs[0, aim] + buffs[1, range] + buffs[2, mode];
-            degree = (ballisticSkill - value) / 10.0;
+            d100Value = rnd.Next(100);
+            hitValue = (d100Value / 10) + ((d100Value % 10) * 10);
+            int ballisticSkill = accuracy + buffs[0, 1] + buffs[1, range] + buffs[2, mode];
+            degree = (ballisticSkill - d100Value) / 10.0;
             return ballisticSkill;
         }
 
@@ -67,7 +152,7 @@
                 return "Для проверки характеристик огнестрельного оружия используйте ?стрелять {название}, а для гранат ?бросать {название}";
             }
 
-            string result = $"```diff\nКласс оружия: \r-{stats[0]}\nДистанция стрельбы: \r-{stats[1]} м\nПараметр урона: \r-{dmgStats[0]}к10 + {dmgStats[1]}\nВместимость магазина: \r-{stats[2]}\nБронебойность: \r-{pen}\nВес: \r-{stats[3]} кг```";
+            string result = $"```diff\nОружие: \r-{name}\nДистанция стрельбы: \r-{maxRange} м\nПараметр урона: \r-{dmgStats[0]}к10 + {dmgStats[1]}\nВместимость магазина: \r-{maxAmmo}\nБронебойность: \r-{pen}\nВес: \r-{weight} кг```";
             string buf = string.Empty;
             for (int i = 0; i < qualitiesList.Length; i++)
             {
@@ -131,50 +216,6 @@
 
             result += buf == string.Empty ? "Особенностей нет" : buf;
             return result;
-        }
-
-        /// <summary>
-        /// Переводит перевернутое значение д100 в номер части тела.
-        /// </summary>
-        /// <param name="hitValue">Перевернутое д100.</param>
-        /// <returns>Номер части тела в которое попали.</returns>
-        protected static int HitPointCalculate(int hitValue)
-        {
-            if (hitValue > 0 & hitValue < 11)
-            {
-                return 0;
-            }
-
-            if (hitValue > 10 & hitValue < 31)
-            {
-                if (hitValue > 20)
-                {
-                    return 2;
-                }
-                else
-                {
-                    return 3;
-                }
-            }
-
-            if (hitValue > 30 & hitValue < 71)
-            {
-                return 1;
-            }
-
-            if (hitValue > 70 & hitValue < 100 || hitValue == 0)
-            {
-                if (hitValue == 0 || hitValue > 85)
-                {
-                    return 4;
-                }
-                else
-                {
-                    return 5;
-                }
-            }
-
-            return 6;
         }
 
         /// <summary>

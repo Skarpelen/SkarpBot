@@ -139,9 +139,9 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, mode, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aim);
-            var shoot = await gunFire.Shoot(DataAccessLayer);
-            await ReplyAsync(shoot);
+            //var gunFire = new FireWeapon(accuracy, mode, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aim);
+            //var shoot = await gunFire.Shoot(DataAccessLayer);
+            //await ReplyAsync(shoot);
 
             /*gunFire.Shoot(out point, out dmg);
             await DataAccessLayer.ChangeHp(Context.User.Id, point, dmg);
@@ -166,9 +166,9 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aimpoint, aim);
-            var shoot = await gunFire.CalledShot(DataAccessLayer);
-            await ReplyAsync(shoot);
+            //var gunFire = new FireWeapon(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id, aimpoint, aim);
+            //var shoot = await gunFire.CalledShot(DataAccessLayer);
+            //await ReplyAsync(shoot);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@
         [Alias("стрельба", "с", "c")]
         public async Task FireWeapon(string wType)
         {
-            var gunFire = new FireWeapon(wType);
-            await ReplyAsync(gunFire.WriteQualitiesFire());
+            //var gunFire = new FireWeapon(wType);
+            //await ReplyAsync(gunFire.WriteQualitiesFire());
         }
 
         /// <summary>

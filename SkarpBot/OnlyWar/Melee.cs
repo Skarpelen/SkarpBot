@@ -9,14 +9,14 @@
         {
             Armour armr = new(aType);
             int MeleeSkill = GetValue();
-            hitIndex = HitPointCalculate(hitValue);
+            hitIndex = GetHittedPartID(hitValue);
 
             if (error | armr.error)
             {
                 return "Неверное название оружия или брони";
             }
 
-            if (MeleeSkill - value > 0)
+            if (MeleeSkill - d100Value > 0)
             {
                 var CalcDmg = await CalcDamage(armr, hitPoints, hitIndex, dataAccessLayer);
                 return "Взмашок успешно поразил " + hitPoints[hitIndex] +

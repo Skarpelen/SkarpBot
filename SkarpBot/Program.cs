@@ -52,7 +52,7 @@
             // Add the DiscordSocketClient, along with specifying the GatewayIntents and user caching
             .AddSingleton(x => new DiscordSocketClient(new DiscordSocketConfig
             {
-                GatewayIntents = Discord.GatewayIntents.AllUnprivileged,
+                GatewayIntents = Discord.GatewayIntents.All,
                 LogGatewayIntentWarnings = false,
                 AlwaysDownloadUsers = true,
                 LogLevel = LogSeverity.Debug,

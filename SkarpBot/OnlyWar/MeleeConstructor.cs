@@ -7,6 +7,9 @@
         public Melee(int accuracy, string type, string atype, ulong id)
         {
             this.accuracy = accuracy;
+            mode = 0;
+            aim = false;
+            range = 1;
             aType = atype;
             targetId = id;
             switch (type)
