@@ -1,10 +1,6 @@
 ﻿namespace SkarpBot
 {
-    using System.IO;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using Discord;
-    using Discord.Addons.Hosting;
     using Discord.Commands;
     using Discord.Interactions;
     using Discord.WebSocket;
@@ -13,11 +9,10 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
     using SkarpBot.Data;
     using SkarpBot.Data.Context;
     using SkarpBot.Logger;
-    using SkarpBot.Services;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Сердце бота.

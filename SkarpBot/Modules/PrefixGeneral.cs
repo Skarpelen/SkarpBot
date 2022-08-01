@@ -45,7 +45,7 @@
                 return;
             }
 
-            await DataAccessLayer.Nuller(Context.User.Id, aType);
+            //await DataAccessLayer.Nuller(Context.User.Id, aType);
             await ReplyAsync("Что то случилось");
         }
 
@@ -53,7 +53,7 @@
         public async Task SetHp(int point, int val)
         {
             val *= -1;
-            await DataAccessLayer.ChangeHp(Context.User.Id, point, val);
+            //await DataAccessLayer.ChangeHp(Context.User.Id, point, val);
             await ReplyAsync("Значения применены");
         }
 
@@ -62,7 +62,7 @@
         public async Task SetHp(IUser user, int point, int val)
         {
             val *= -1;
-            await DataAccessLayer.ChangeHp(user.Id, point, val);
+            //await DataAccessLayer.ChangeHp(user.Id, point, val);
             await ReplyAsync("Значения применены");
         }
 
@@ -118,7 +118,7 @@
         [Command("хп")]
         public async Task HpGet()
         {
-            await ReplyAsync(DataAccessLayer.GetHp(Context.User.Id));
+            await ReplyAsync(DataAccessLayer.GetHp(Context.User.Id, Context.Guild.Id));
         }
 
         /// <summary>
@@ -221,9 +221,9 @@
         [Alias("р")]
         public async Task MeleeWeapon(int accuracy, string wType, IUser user)
         {
-            var knifePower = new Melee(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id);
-            var swing = await knifePower.Swing(DataAccessLayer);
-            await ReplyAsync(swing);
+            //var knifePower = new Melee(accuracy, wType, DataAccessLayer.GetArmour(user.Id), user.Id);
+            //var swing = await knifePower.Swing(DataAccessLayer);
+            //await ReplyAsync(swing);
         }
 
         [Command("резать")]

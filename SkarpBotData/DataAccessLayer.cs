@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SkarpBot.Data.Context;
-using SkarpBot.Data.Models;
 
 namespace SkarpBot.Data
 {
@@ -31,7 +30,7 @@ namespace SkarpBot.Data
 
             if (guild == null)
             {
-                guild = context.Add(new Guild { Id = id }).Entity;
+                //guild = context.Add(new Guild { Id = id }).Entity;
                 context.SaveChanges();
             }
 
@@ -50,7 +49,7 @@ namespace SkarpBot.Data
             }
             else
             {
-                context.Add(new Guild { Id = id, Prefix = prefix });
+                //context.Add(new Guild { Id = id, Prefix = prefix });
             }
 
             await context.SaveChangesAsync();

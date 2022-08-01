@@ -15,8 +15,11 @@ namespace SkarpBot.Data.Context
         {
         }
 
-        public DbSet<Guild> Guilds { get; set; }
-        public DbSet<PersonHP> Persons { get; set; }
-        public DbSet<PersonArmour> Armour { get; set; }
+        public DbSet<Guilds> Guilds { get; set; }
+        public DbSet<Users> Users { get; set; }
+        public DbSet<Status> Status { get; set; }
+        public DbSet<Weapons> Weapons { get; set; }
+        public DbSet<Grenades> Grenades { get; set; }
+        public DbSet<MenuHandler> MenuHandler { get; set; }
     }
 }

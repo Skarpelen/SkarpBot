@@ -1,28 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace SkarpBot.Data.Migrations
 {
-    public partial class PersonHP : Migration
+    public partial class AddedMenuHandler : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Persons",
+                name: "MenuHandler",
                 columns: table => new
                 {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Head = table.Column<int>(type: "int", nullable: false),
-                    Body = table.Column<int>(type: "int", nullable: false),
-                    LHand = table.Column<int>(type: "int", nullable: false),
-                    RHand = table.Column<int>(type: "int", nullable: false),
-                    LFoot = table.Column<int>(type: "int", nullable: false),
-                    RFoot = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    GuildId = table.Column<int>(type: "int", nullable: false),
+                    PickedValue = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Persons", x => x.Id);
+                    table.PrimaryKey("PK_MenuHandler", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
         }
@@ -30,7 +30,7 @@ namespace SkarpBot.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Persons");
+                name: "MenuHandler");
         }
     }
 }

@@ -5,35 +5,30 @@
 
     partial class Melee
     {
-        public async Task<string> Swing(DataAccessLayer dataAccessLayer)
+        public async Task<string> Swing(DataAccessLayer dataAccessLayer, int statusid)
         {
-            Armour armr = new(aType);
-            int MeleeSkill = GetValue();
-            hitIndex = GetHittedPartID(hitValue);
-
-            if (error | armr.error)
+            if (GotHit())
             {
-                return "Неверное название оружия или брони";
+                Armour armour = new(aType);
+                int result;
+                string buffString;
+
+                if (error)
+                {
+                    return "Неверное название оружия";
+                }
+
+                if (armour.error)
+                {
+                    return "Неверное название брони";
+                }
+
+                result = armour.Damage(hittedPartID, dmgStats, pen);
+                await dataAccessLayer.ChangeHp(statusid, hittedPartID, result);
+                return $"Взмашок успешно поразил {hitPoints[hittedPartID]}, нанеся <@{targetId}> {result} урона.\nСтепень успеха: {degree}";
             }
 
-            if (MeleeSkill - d100Value > 0)
-            {
-                var CalcDmg = await CalcDamage(armr, hitPoints, hitIndex, dataAccessLayer);
-                return "Взмашок успешно поразил " + hitPoints[hitIndex] +
-                    CalcDmg;
-            }
-            else
-            {
-                return $"Взмашок прошёл мимо цели\nСтепень успеха: {degree}";
-            }
-        }
-
-        private async Task<string> CalcDamage(Armour armour, string[] hitPoint, int index, DataAccessLayer dataAccessLayer)
-        {
-            int roll = armour.Damage(index, dmgStats, pen);
-            await dataAccessLayer.ChangeHp(targetId, index, roll);
-            string result = ", нанеся цели " + roll + " урона.\n";
-            return result + "Степень успеха: " + degree;
+            return $"Взмашок прошёл мимо цели\nСтепень успеха: {degree}";
         }
     }
 }

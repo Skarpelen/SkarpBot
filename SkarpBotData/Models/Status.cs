@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SkarpBot.Data.Models
 {
-    public class PersonHP
+    public class Status
     {
-        public ulong Id { get; set; }
+        public int StatusId { get; set; }
+        public int UserId { get; set; }
+        public string Armour { get; set; }
         public int Head { get; set; }
         public int Body { get; set; }
         public int LHand { get; set; }

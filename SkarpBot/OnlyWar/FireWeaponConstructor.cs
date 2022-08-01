@@ -31,17 +31,6 @@
                     maxAmmo = 9;
                     break;
 
-                case "транквил":
-                    name = "транквил";
-                    pen = 1;
-                    shots = new int[] { 1, 0, 0 };
-                    dmgStats[0] = 0;
-                    dmgStats[1] = 1;
-                    weight = 1.5;
-                    maxRange = 30;
-                    maxAmmo = 9;
-                    break;
-
                 case "автомат":
                     name = "автомат";
                     pen = 2;
@@ -51,28 +40,6 @@
                     weight = 5;
                     maxRange = 100;
                     maxAmmo = 30;
-                    break;
-
-                case "фестон":
-                    name = "фестон";
-                    pen = 3;
-                    shots = new int[] { 1, 5, 15 };
-                    dmgStats[0] = 1;
-                    dmgStats[1] = 0;
-                    weight = 5;
-                    maxRange = 100;
-                    maxAmmo = 50;
-                    break;
-
-                case "п90":
-                    name = "п90";
-                    pen = 1;
-                    shots = new int[] { 1, 5, 15 };
-                    dmgStats[0] = 1;
-                    dmgStats[1] = 0;
-                    weight = 5;
-                    maxRange = 100;
-                    maxAmmo = 50;
                     break;
 
                 case "дробовик":
@@ -105,17 +72,6 @@
                     shots = new int[] { 0, 0, 8 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 4;
-                    weight = 30;
-                    maxRange = 100;
-                    maxAmmo = 75;
-                    break;
-
-                case "турель":
-                    name = "турель";
-                    pen = 5;
-                    shots = new int[] { 0, 0, 10 };
-                    dmgStats[0] = 1;
-                    dmgStats[1] = 7;
                     weight = 30;
                     maxRange = 100;
                     maxAmmo = 75;
@@ -282,13 +238,6 @@
                     shots = new int[] { 1, 2, 0, 1 };
                     dmgStats[0] = 1;
                     dmgStats[1] = 2;
-                    break;
-
-                case "эзопистолетд":
-                    pen = 6;
-                    shots = new int[] { 1, 2, 0, 1 };
-                    dmgStats[0] = 1;
-                    dmgStats[1] = 5;
                     break;
 
                 default:

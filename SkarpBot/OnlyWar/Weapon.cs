@@ -17,17 +17,6 @@ namespace SkarpBot.OnlyWar
         protected int maxAmmo;
         protected int hittedPartID;
         protected string name;
-
-        /// <summary>
-        /// Перевернутое число д100 для определения попадания.
-        /// </summary>
-        protected int hitValue;
-
-        /// <summary>
-        /// Номер части тела, куда было нанесено повреждение.
-        /// </summary>
-        protected int hitIndex;
-
         protected int[,] buffs = new int[,] { { 10, 0, 20, 0 }, { 10, 0, -10, -20 }, { 20, 10, 0, -20 } };
         protected int[] dmgStats = new int[2];
         protected bool[] qualities = new bool[11];
@@ -60,6 +49,11 @@ namespace SkarpBot.OnlyWar
             return true;
         }
 
+        /// <summary>
+        /// Переведи число от 0 до 99 в айди части тела.
+        /// </summary>
+        /// <param name="d100">Число от 0 до 99.</param>
+        /// <returns>Айди части тела.</returns>
         protected int GetHittedPartID(int d100)
         {
             int d100Reversed = (d100 / 10) + ((d100 % 10) * 10);
@@ -101,7 +95,15 @@ namespace SkarpBot.OnlyWar
             return 6;
         }
 
-        protected async Task<int> GetFullDamage(Armour armour, ulong targetId, int[] dmgStats, DataAccessLayer dataAccessLayer)
+        /// <summary>
+        /// Дамажит полностью все тело(все в БД заносит само).
+        /// </summary>
+        /// <param name="armour">Броня цели.</param>
+        /// <param name="targetId">Айди цели.</param>
+        /// <param name="dmgStats">Статы оружия.</param>
+        /// <param name="dataAccessLayer">БДшечка.</param>
+        /// <returns>Урон в тело(максимальный из всех значений).</returns>
+        protected async Task<int> GetFullDamage(Armour armour, int targetId, int[] dmgStats, DataAccessLayer dataAccessLayer)
         {
             Random random = new Random();
             int roll = dmgStats[1];
@@ -113,20 +115,6 @@ namespace SkarpBot.OnlyWar
             double defcoeff = armour.DefenceDegree();
             await dataAccessLayer.CangeFullHp(targetId, (int)(roll * defcoeff));
             return (int)(roll * defcoeff);
-        }
-
-        /// <summary>
-        /// Вычисляет глобальные переменные ролла д100, перевернутого д100 и степень успеха.
-        /// </summary>
-        /// <returns>Итоговая меткость после всех факторов.</returns>
-        protected int GetValue()
-        {
-            Random rnd = new();
-            d100Value = rnd.Next(100);
-            hitValue = (d100Value / 10) + ((d100Value % 10) * 10);
-            int ballisticSkill = accuracy + buffs[0, 1] + buffs[1, range] + buffs[2, mode];
-            degree = (ballisticSkill - d100Value) / 10.0;
-            return ballisticSkill;
         }
 
         protected static int RollDmg(int[] stats)

@@ -33,8 +33,16 @@ namespace InteractionFramework
             // Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
             await _handler.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
+
+            //_client.SelectMenuExecuted += MyMenuHandler;
             // Process the InteractionCreated payloads to execute Interactions commands
             _client.InteractionCreated += HandleInteraction;
+        }
+
+        public async Task MyMenuHandler(SocketMessageComponent arg)
+        {
+            var text = string.Join(", ", arg.Data.Values);
+            await arg.RespondAsync($"You have selected {text}, {arg.User.Username}, {arg.GuildId}, {arg.GuildLocale}");
         }
 
         private async Task LogAsync(LogMessage log)
