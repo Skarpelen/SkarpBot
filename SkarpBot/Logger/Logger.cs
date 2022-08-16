@@ -7,6 +7,7 @@
     public abstract class Logger : ILogger
     {
         public string _guid;
+
         public Logger()
         {
             // extra data to show individual logger instances

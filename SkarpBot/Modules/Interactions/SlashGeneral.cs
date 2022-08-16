@@ -31,7 +31,7 @@
         [SlashCommand("время", "Ну как там во Франции")]
         public async Task TimeAsync(string str)
         {
-            Regex rgx = new(@"[0-23]:[0-59]");
+            Regex rgx = new (@"[0-23]:[0-59]");
             if (rgx.IsMatch(str))
             {
                 await RespondAsync(FrenchTime(str));

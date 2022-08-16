@@ -2,8 +2,8 @@
 {
     public class Armour
     {
+        public bool Error = false;
         private readonly int[] human = new int[6];
-        public bool error = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Armour"/> class.
@@ -15,12 +15,12 @@
             switch (type)
             {
                 case "легкая":
-                    human[0] = 0;
-                    human[1] = 2;
-                    human[2] = 1;
-                    human[3] = 1;
-                    human[4] = 1;
-                    human[5] = 1;
+                    human[0] = 1;
+                    human[1] = 3;
+                    human[2] = 2;
+                    human[3] = 2;
+                    human[4] = 2;
+                    human[5] = 2;
                     break;
 
                 case "средняя":
@@ -32,7 +32,7 @@
                     human[5] = 3;
                     break;
 
-                case "член":
+                case "мог":
                     human[0] = 4;
                     human[1] = 8;
                     human[2] = 4;
@@ -78,7 +78,7 @@
                     break;
 
                 default:
-                    error = true;
+                    Error = true;
                     break;
             }
         }
@@ -100,7 +100,17 @@
                 }
             }
 
+            if (roll < 0)
+            {
+                roll = 0;
+            }
+
             return GetDamage(point, roll + stats[1], pen);
+        }
+
+        public double DefenceDegree()
+        {
+            return human[1] / 20.0;
         }
 
         private int GetDamage(int point, int roll, int pen)
@@ -122,11 +132,6 @@
             }
 
             return num;
-        }
-
-        public double DefenceDegree()
-        {
-            return human[1] / 20;
         }
     }
 }

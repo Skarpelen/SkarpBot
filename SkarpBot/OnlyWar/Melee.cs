@@ -5,30 +5,26 @@
 
     partial class Melee
     {
-        public async Task<string> Swing(DataAccessLayer dataAccessLayer, int statusid)
+        public async Task<string> Swing(DataAccessLayer dataAccessLayer, int targetid)
         {
             if (GotHit())
             {
-                Armour armour = new(aType);
+                Armour armour = new (aType);
                 int result;
-                string buffString;
 
-                if (error)
+                if (equipment.damageStats[0] > 30)
                 {
-                    return "Неверное название оружия";
+                    result = GetFullDamage(armour, equipment.damageStats);
+                    await dataAccessLayer.CangeFullHp(targetid, -result);
+                    return $"*Поток красных частиц полностью дезинтегрировал бойца и помещение вокруг него.*\n\n\n\n\n\n\n\n\nИ҉͑͜͝С̶͢͞Ч̷̨͞Е̷̢͞З̵̧͞Н̵̧͝И̶̧͞.҈̨҇̆ О̸̢͠С̷̢͠О̴̢̕З̸̢̛Н̷̧͠А̷̧͞Й̴̛͜ С̶̧͡В̶̨͡О҉̡̋͞Ю̵̨҇ Н̷̡͝Е̷͢͝М̸̨͞О̶̢͡Щ҈҇̃͜Н̷̢҇О̷̧̕С̸̨͠Т̶̨̛Ь̶̢͡";
                 }
 
-                if (armour.error)
-                {
-                    return "Неверное название брони";
-                }
-
-                result = armour.Damage(hittedPartID, dmgStats, pen);
-                await dataAccessLayer.ChangeHp(statusid, hittedPartID, result);
-                return $"Взмашок успешно поразил {hitPoints[hittedPartID]}, нанеся <@{targetId}> {result} урона.\nСтепень успеха: {degree}";
+                result = armour.Damage(hittedPartID, equipment.damageStats, equipment.penetration);
+                await dataAccessLayer.ChangeHp(targetid, hittedPartID, -result);
+                return $"Взмашок успешно поразил {hitPoints[hittedPartID]}, нанеся <@{weapon.TargetId}> {result} урона.\nСтепень успеха: {Degree}";
             }
 
-            return $"Взмашок прошёл мимо цели\nСтепень успеха: {degree}";
+            return $"Взмашок прошёл мимо цели\nСтепень успеха: {Degree}";
         }
     }
 }

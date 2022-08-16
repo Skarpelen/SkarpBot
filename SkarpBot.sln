@@ -5,7 +5,12 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkarpBot", "SkarpBot\SkarpBot.csproj", "{4709B5F0-8EB6-4B19-8F84-969D7510AF4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkarpBot.Data", "SkarpBotData\SkarpBot.Data.csproj", "{3B7664EC-CAEA-4DB3-BE97-D4A68A3C43DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkarpBot.Data", "SkarpBotData\SkarpBot.Data.csproj", "{3B7664EC-CAEA-4DB3-BE97-D4A68A3C43DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC2C552B-8939-4E99-9007-FE500D068786}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

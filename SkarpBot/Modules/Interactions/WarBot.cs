@@ -13,6 +13,13 @@
             await DataAccessLayer.UserStart(Context.Guild.Id, Context.Guild.Name, Context.User.Id, Context.User.Username, "легкая");
         }
 
+        [SlashCommand("список", "Cписок игроков на сервере")]
+        [RequireUserPermission(ChannelPermission.ManageRoles)]
+        public async Task UsersList()
+        {
+            await RespondAsync(DataAccessLayer.GetUsers(Context.Guild.Id));
+        }
+
         [SlashCommand("хп", "Выдает хп из бд")]
         public async Task HpGet()
         {
@@ -23,25 +30,27 @@
         public async Task Register(string aType)
         {
             Armour armour = new Armour(aType);
-            if (armour.error)
+            if (armour.Error)
             {
                 await RespondAsync("Некорректное название брони", null, false, true);
                 return;
             }
 
             await DataAccessLayer.UserStart(Context.Guild.Id, Context.Guild.Name, Context.User.Id, Context.User.Username, aType);
-            await RespondAsync($"Пользователь {Context.User.Username} добавлен в систему с броней подтипа {aType}");
+            await RespondAsync($"Пользователь {Context.User.Username} добавлен в систему с броней подтипа `{aType}`");
         }
 
         [SlashCommand("добавить", "Добавить в инвентарь")]
-        public async Task AddToInventory(string name, [Choice("Оружие дальнего боя", 0), Choice("Оружие ближнего боя", 1), Choice("Метательное оружие", 2)]
-        int type, int amount = 1)
+        public async Task AddToInventory(
+            string name,
+            [Choice("Оружие дальнего боя", 0), Choice("Оружие ближнего боя", 1), Choice("Метательное оружие", 2)] int type,
+            int amount = 1)
         {
             switch (type)
             {
                 case 0:
                     var weapon = new FireWeapon(-1, -1, name, string.Empty, 0, false);
-                    if (weapon.error)
+                    if (weapon.Error)
                     {
                         await RespondAsync("Некорректное название оружия", null, false, true);
                         return;
@@ -52,7 +61,7 @@
 
                 case 1:
                     var melee = new Melee(-1, name, string.Empty, 0);
-                    if (melee.error)
+                    if (melee.Error)
                     {
                         await RespondAsync("Некорректное название оружия", null, false, true);
                         return;
@@ -63,7 +72,7 @@
 
                 case 2:
                     var grenade = new Grenade(-1, name);
-                    if (grenade.error)
+                    if (grenade.Error)
                     {
                         await RespondAsync("Некорректное название гранаты", null, false, true);
                         return;
@@ -73,7 +82,7 @@
                     break;
             }
 
-            await RespondAsync($"Успешное приобретение в инвентаре <@{Context.User.Id}>");
+            await RespondAsync($"Предмет `{name}` был добавлен в инвентарь <@{Context.User.Id}>");
         }
 
         [SlashCommand("инвентарь", "инвентарь игрока")]
@@ -105,14 +114,20 @@
             var handEmoji = new Emoji("\U0001F590");
             foreach (var weapon in weapons)
             {
-                menu.AddOption(FirstLetterToUpper(weapon.WeaponName), $"{weapon.WeaponId}.W",
-                    $"Количество оставшихся снарядов в магазине: {weapon.CurrentAmmo}", weapon.InventoryName == "equipped" ? handEmoji : briefcaseEmoji);
+                menu.AddOption(
+                    FirstLetterToUpper(weapon.WeaponName),
+                    $"{weapon.WeaponId}.W",
+                    $"Количество оставшихся снарядов в магазине: {weapon.CurrentAmmo}",
+                    weapon.InventoryName == "equipped" ? handEmoji : briefcaseEmoji);
             }
 
             foreach (var grenade in grenades)
             {
-                menu.AddOption(FirstLetterToUpper(grenade.GrenadeName), $"{grenade.GrenadeId}.G",
-                    $"Количество гранат в инвентаре: {grenade.Amount}", briefcaseEmoji);
+                menu.AddOption(
+                    FirstLetterToUpper(grenade.GrenadeName),
+                    $"{grenade.GrenadeId}.G",
+                    $"Количество гранат в инвентаре: {grenade.Amount}",
+                    briefcaseEmoji);
             }
 
             var component = new ComponentBuilder();
@@ -147,51 +162,23 @@
         public async Task Reload()
         {
             var weaponname = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
-            var weapon = new FireWeapon(-1, 0, weaponname.WeaponName, null, 0, false);
+            var weapon = new FireWeapon(-1, 0, weaponname.WeaponName, string.Empty, 0, false);
 
-            if (weapon.error)
+            if (weapon.Error)
             {
-                RespondAsync("Невозможно перезарядить это оружие", null, false, true);
+                await RespondAsync("Невозможно перезарядить это оружие", null, false, true);
                 return;
             }
 
-            string result = await DataAccessLayer.ReloadWeapon(Context.User.Id, Context.Guild.Id, weapon.GetMaxAmmo());
+            string result = await DataAccessLayer.ReloadWeapon(weaponname.WeaponId, weapon.GetMaxAmmo());
             await RespondAsync(result);
         }
 
         [SlashCommand("атаковать", "Атаковать экипированным оружием")]
-        public async Task StandartAttack(int accuracy, [Choice("Стандартный режим/ближний бой", 0), Choice("Короткая очередь", 1),
-            Choice("Длинная очередь", 2)] int mode, IUser targetUser, [Choice("Дополнительное прицеливание", 1), Choice("Простая стрельба", 0)] int isAim = 0)
-        {
-            if (accuracy < 0)
-            {
-                await RespondAsync("Неправильное значение режима меткости", null, false, true);
-                return;
-            }
-
-            var weaponname = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
-            var armourname = DataAccessLayer.GetArmour(targetUser.Id, Context.Guild.Id);
-            var meleeCheck = new Melee(weaponname.WeaponName);
-
-            string result;
-
-            if (meleeCheck.error)
-            {
-                var gunFire = new FireWeapon(accuracy, mode, weaponname.WeaponName, armourname.Armour, targetUser.Id, isAim == 1 ? true : false);
-                result = await gunFire.RegularShot(DataAccessLayer, weaponname.WeaponId, armourname.StatusId);
-            }
-            else
-            {
-                var melee = new Melee(accuracy, weaponname.WeaponName, armourname.Armour, targetUser.Id);
-                result = await melee.Swing(DataAccessLayer, armourname.StatusId);
-            }
-
-            await RespondAsync(result);
-        }
-
-        [SlashCommand("метко", "Выстрелить в определенную часть тела")]
-        public async Task CalledShot(int accuracy, IUser targetUser, [Choice ("Голова", 0), Choice("Тело", 1), Choice("Левая рука", 2),
-            Choice("Правая рука", 3), Choice("Левая нога", 4), Choice("Правая нога", 5)] int aimpoint,
+        public async Task StandartAttack(
+            int accuracy,
+            [Choice("Стандартный режим/ближний бой", 0), Choice("Короткая очередь", 1), Choice("Длинная очередь", 2)] int mode,
+            IUser targetUser,
             [Choice("Дополнительное прицеливание", 1), Choice("Простая стрельба", 0)] int isAim = 0)
         {
             if (accuracy < 0)
@@ -200,20 +187,64 @@
                 return;
             }
 
-            var weaponname = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
+            var equippedweapon = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
             var armourname = DataAccessLayer.GetArmour(targetUser.Id, Context.Guild.Id);
-            var meleeCheck = new Melee(weaponname.WeaponName);
+            var meleeCheck = new Melee(equippedweapon.WeaponName);
 
             string result;
 
-            if (!meleeCheck.error)
+            if (meleeCheck.Error)
+            {
+                if (equippedweapon.CurrentAmmo < 1)
+                {
+                    await RespondAsync("Клик-клик... оружие не стреляет");
+                    return;
+                }
+                var gunFire = new FireWeapon(accuracy, mode, equippedweapon.WeaponName, armourname.Armour, targetUser.Id, isAim == 1 ? true : false);
+                result = await gunFire.RegularShot(DataAccessLayer, equippedweapon.WeaponId, armourname.StatusId);
+            }
+            else
+            {
+                var melee = new Melee(accuracy, equippedweapon.WeaponName, armourname.Armour, targetUser.Id);
+                result = await melee.Swing(DataAccessLayer, armourname.StatusId);
+            }
+
+            await RespondAsync(result);
+        }
+
+        [SlashCommand("метко", "Выстрелить в определенную часть тела")]
+        public async Task CalledShot(
+            int accuracy,
+            IUser targetUser,
+            [Choice("Голова", 0), Choice("Тело", 1), Choice("Левая рука", 2), Choice("Правая рука", 3), Choice("Левая нога", 4), Choice("Правая нога", 5)] int aimpoint,
+            [Choice("Дополнительное прицеливание", 1), Choice("Простая стрельба", 0)] int isAim = 0)
+        {
+            if (accuracy < 0)
+            {
+                await RespondAsync("Неправильное значение режима меткости", null, false, true);
+                return;
+            }
+
+            var equippedweapon = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
+            var armourname = DataAccessLayer.GetArmour(targetUser.Id, Context.Guild.Id);
+            var meleeCheck = new Melee(equippedweapon.WeaponName);
+
+            string result;
+
+            if (!meleeCheck.Error)
             {
                 await RespondAsync("Невозможно на данный момент сделать это оружием ближнего боя", null, false, true);
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, weaponname.WeaponName, armourname.Armour, targetUser.Id, aimpoint, isAim == 1 ? true : false);
-            result = await gunFire.CalledShot(DataAccessLayer, weaponname.WeaponId, armourname.StatusId);
+            if (equippedweapon.CurrentAmmo < 1)
+            {
+                await RespondAsync("Клик-клик... оружие не стреляет");
+                return;
+            }
+
+            var gunFire = new FireWeapon(accuracy, equippedweapon.WeaponName, armourname.Armour, targetUser.Id, aimpoint, isAim == 1 ? true : false);
+            result = await gunFire.CalledShot(DataAccessLayer, equippedweapon.WeaponId, armourname.StatusId);
 
             await RespondAsync(result);
         }
@@ -230,21 +261,21 @@
             var grenade = new Grenade(wType);
             var knife = new Melee(wType);
 
-            if (!gun.error)
+            if (!gun.Error)
             {
                 await RespondAsync(gun.WriteQualitiesFire());
             }
-            else if (!grenade.error)
+            else if (!grenade.Error)
             {
                 await RespondAsync(grenade.WriteQualitiesGrenade());
             }
-            else if (!knife.error)
+            else if (!knife.Error)
             {
                 await RespondAsync(knife.WriteQualitiesMelee());
             }
             else
             {
-                RespondAsync("Ошибка в названии оружия", null, false, true);
+                await RespondAsync("Ошибка в названии оружия", null, false, true);
             }
         }
 
@@ -264,7 +295,22 @@
             }
 
             var grenadeThrow = new Grenade(accuracy, wType);
-            await RespondAsync(grenadeThrow.GrenadeThrow());
+            if (grenadeThrow.Error)
+            {
+                await RespondAsync("Такой гранаты не существует", null, false, true);
+                return;
+            }
+
+            var grenadesList = DataAccessLayer.GetInventoryGrenades(Context.User.Id, Context.Guild.Id);
+            var userGrenade = grenadesList.Find(x => x.GrenadeName == wType);
+            if (userGrenade != null)
+            {
+                await DataAccessLayer.DestroyGrenade(userGrenade.GrenadeId);
+                await RespondAsync(grenadeThrow.GrenadeThrow());
+                return;
+            }
+
+            await RespondAsync("Такой гранаты в инвентаре нет", null, false, true);
         }
 
         /// <summary>

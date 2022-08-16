@@ -28,12 +28,6 @@ namespace SkarpBot.Data
             var guild = context.Guilds
                 .Find(id);
 
-            if (guild == null)
-            {
-                //guild = context.Add(new Guild { Id = id }).Entity;
-                context.SaveChanges();
-            }
-
             return guild.Prefix;
         }
 

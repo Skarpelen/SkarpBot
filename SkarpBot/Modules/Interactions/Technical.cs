@@ -45,12 +45,15 @@
         {
             // make a safety cast to check if the message is ISystem- or IUserMessage
             if (message is not IUserMessage userMessage)
+            {
                 await RespondAsync(text: ":x: You cant pin system messages!");
+            }
 
             // if the pins in this channel are equal to or above 50, no more messages can be pinned.
             else if ((await Context.Channel.GetPinnedMessagesAsync()).Count >= 50)
+            {
                 await RespondAsync(text: ":x: You cant pin any more messages, the max has already been reached in this channel!");
-
+            }
             else
             {
                 await userMessage.PinAsync();
@@ -128,7 +131,7 @@
         public async Task Equipper()
         {
             string answer = await DataAccessLayer.EquipWeapon(Context.User.Id, Context.Guild.Id);
-            await RespondAsync(answer, null, false, true);
+            await RespondAsync(answer);
         }
 
         [ComponentInteraction("destroy-button")]

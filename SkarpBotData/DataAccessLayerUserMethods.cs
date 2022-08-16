@@ -55,10 +55,12 @@ namespace SkarpBot.Data
             }
         }
 
-        public async Task<string> ReloadWeapon(ulong userid, ulong guildid, int maxAmmo)
+        public async Task<string> ReloadWeapon(int weaponid, int maxAmmo)
         {
             using var context = _contextFactory.CreateDbContext();
-            var weapon = GetEquippedWeapon(userid, guildid);
+            var weapon = context.Weapons
+                .Where(w => w.WeaponId == weaponid)
+                .First();
 
             weapon.CurrentAmmo = maxAmmo;
 
@@ -83,6 +85,26 @@ namespace SkarpBot.Data
                 .First();
 
             return weapon;
+        }
+
+        public Weapons GetEquippedWeapon(int userid)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var user = context.Users
+                .Where(u => u.Id == userid)
+                .First();
+
+            var weapon = context.Weapons
+                .Where(w => w.UserId == user.Id && w.InventoryName == "equipped")
+                .ToList();
+
+            if (weapon.Count() != 0)
+            {
+                return weapon.First();
+            }
+
+            return null;
         }
 
         public Status GetArmour(ulong userid, ulong guildid)
@@ -139,12 +161,38 @@ namespace SkarpBot.Data
                     .Where(w => w.GrenadeId == Convert.ToInt32(pickedvalue[0]))
                     .First();
 
-                context.Grenades.Remove(grenades);
+                if (grenades.Amount == 1)
+                {
+                    context.Grenades.Remove(grenades);
+                    await context.SaveChangesAsync();
+                    return "Снаряжение было удалено";
+                }
+
+                grenades.Amount -= 1;
                 await context.SaveChangesAsync();
-                return "Снаряжение было удалено";
+                return $"Из инвентаря была удалена 1 граната типа `{grenades.GrenadeName}`. В инвентаре осталось {grenades.Amount}";
             }
 
             return "???";
+        }
+
+        public async Task DestroyGrenade(int grenadeid)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var grenades = context.Grenades
+                .Where(g => g.GrenadeId == grenadeid)
+                .First();
+
+            if (grenades.Amount == 1)
+            {
+                context.Grenades.Remove(grenades);
+                await context.SaveChangesAsync();
+                return;
+            }
+
+            grenades.Amount -= 1;
+            await context.SaveChangesAsync();
+            return;
         }
 
         public async Task AddWeapon(ulong userId, ulong guildId, string weaponName, int maxAmmo)
@@ -223,6 +271,10 @@ namespace SkarpBot.Data
                 .First();
 
             weapon.CurrentAmmo += coeff;
+            if (weapon.CurrentAmmo < 0)
+            {
+                weapon.CurrentAmmo = 0;
+            }
 
             await context.SaveChangesAsync();
         }
@@ -306,6 +358,8 @@ namespace SkarpBot.Data
             status.RFoot += (int)(coeff * 0.3);
             if (status.RFoot < 0)
                 status.RFoot = 0;
+
+            await context.SaveChangesAsync();
         }
 
         public string GetHp(ulong userid, ulong guildid)
@@ -324,12 +378,12 @@ namespace SkarpBot.Data
                 .First();
 
             string result = $"Текущее состояние <@{userid}>\n" +
-                $"\n**Голова: **{status.Head / maxHp[0] * 100.0}%" +
-                $"\n**Тело: **{status.Body / maxHp[1] * 100.0}%" +
-                $"\n**Левая рука: **{status.LHand / maxHp[2] * 100.0}%" +
-                $"\n**Правая рука: **{status.RHand / maxHp[2] * 100.0}%" +
-                $"\n**Левая нога: **{status.LFoot / maxHp[3] * 100.0}%" +
-                $"\n**Правая нога: **{status.RFoot / maxHp[3] * 100.0}%";
+                $"\n**Голова: **{status.Head / (double) maxHp[0] * 100.0}%" +
+                $"\n**Тело: **{status.Body / (double)maxHp[1] * 100.0}%" +
+                $"\n**Левая рука: **{status.LHand / (double)maxHp[2] * 100.0}%" +
+                $"\n**Правая рука: **{status.RHand / (double)maxHp[2] * 100.0}%" +
+                $"\n**Левая нога: **{status.LFoot / (double)maxHp[3] * 100.0}%" +
+                $"\n**Правая нога: **{status.RFoot / (double)maxHp[3] * 100.0}%";
 
             return result;
         }

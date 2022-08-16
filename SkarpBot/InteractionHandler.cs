@@ -1,14 +1,13 @@
-﻿using Discord;
-using Discord.Interactions;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using SkarpBot;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
-
-namespace InteractionFramework
+﻿namespace InteractionFramework
 {
+    using System;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using Discord;
+    using Discord.Interactions;
+    using Discord.WebSocket;
+    using Microsoft.Extensions.Configuration;
+
     public class InteractionHandler
     {
         private readonly DiscordSocketClient _client;
@@ -33,8 +32,7 @@ namespace InteractionFramework
             // Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
             await _handler.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
-
-            //_client.SelectMenuExecuted += MyMenuHandler;
+            // _client.SelectMenuExecuted += MyMenuHandler;
             // Process the InteractionCreated payloads to execute Interactions commands
             _client.InteractionCreated += HandleInteraction;
         }
