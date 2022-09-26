@@ -4,122 +4,143 @@
 
     partial class FireWeapon : Weapon
     {
+        public FireWeapon(int accuracy, int mode, string type, string armour, ulong id, bool aim)
+            : base(accuracy, mode, type, armour, id, aim)
+        {
+            if (!error)
+            {
+                if (!(equipment.WeaponClass == 0 || equipment.WeaponClass == 1))
+                {
+                    error = true;
+                }
+            }
+        }
+
+        public FireWeapon(string type)
+            : base(type)
+        {
+            if (!error)
+            {
+                if (!(equipment.WeaponClass == 0 || equipment.WeaponClass == 1))
+                {
+                    error = true;
+                }
+            }
+        }
+
         public async Task<string> RegularShot(DataAccessLayer dataAccessLayer, int weaponid, int targetid)
         {
-            if (equipment.RoF[weapon.Mode] == 0)
+            if (equipment.RoF[shotValues.Mode] == 0)
             {
                 return "Оружие не может стрелять в выбранном режиме";
             }
 
-            weapon.CalculateShot();
-            if (weapon.Degree > 0)
+            shotValues.CalculateShot();
+            if (shotValues.Degree < 0)
             {
-                Random random = new ();
-                Armour armour = new (aType);
-                int result, sniper, buf;
-                string buffString;
-
-                switch (equipment.WeaponClass)
-                {
-                    case 0:
-                        if (weapon.Mode == 0)
-                        {
-                            sniper = 0;
-                            if (equipment.Qualities[0] && weapon.AdditionalAim)
-                            {
-                                sniper = (int)weapon.Degree;
-                            }
-
-                            result = armour.Damage(weapon.HittedPartId, equipment.DamageStats, equipment.Penetration, sniper);
-                            await dataAccessLayer.ChangeHp(targetid, weapon.HittedPartId, -result);
-                            await dataAccessLayer.ChangeAmmo(weaponid, -1);
-
-                            return $"Выстрел успешно поразил {hitPoints[weapon.HittedPartId]}, нанеся <@{weapon.TargetId}> {result} урона.\nПотрачен 1 патрон.\nСтепень успеха: {weapon.Degree}";
-                        }
-
-                        result = armour.Damage(weapon.HittedPartId, equipment.DamageStats, equipment.Penetration);
-                        await dataAccessLayer.ChangeHp(targetid, weapon.HittedPartId, -result);
-                        buffString = $"Выстрел успешно поразил {hitPoints[weapon.HittedPartId]}, нанеся <@{weapon.TargetId}> {result} урона.\n";
-
-                        for (int i = 1; i < (int)weapon.Degree && i < equipment.RoF[weapon.Mode]; i++)
-                            {
-                                buf = GetHittedPartID(random.Next(100));
-                                result = armour.Damage(buf, equipment.DamageStats, equipment.Penetration);
-                                await dataAccessLayer.ChangeHp(targetid, buf, -result);
-                                buffString += $"Дополнительное попадание в {hitPoints[buf]} нанесло {result} урона\n";
-                            }
-
-                        await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[weapon.Mode]);
-
-                        buffString += $"Потрачено {equipment.RoF[weapon.Mode]} патронов.\nСтепень успеха: {weapon.Degree}";
-                        return buffString;
-
-                    case 1:
-                        result = GetFullDamage(armour, equipment.DamageStats);
-                        await dataAccessLayer.CangeFullHp(targetid, result);
-                        await dataAccessLayer.ChangeAmmo(weaponid, -1);
-                        return $"Заряд успешно поразил <@{weapon.TargetId}>, нанеся максимально " + result + " урона";
-
-                    default:
-                        return "Ошибка в классе оружия";
-                }
+                await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[shotValues.Mode]);
+                return $"Выстрел{((shotValues.Mode != 0) ? "ы" : string.Empty)} прош{((shotValues.Mode != 0) ? "ли" : "ёл")} мимо цели" +
+                       $"\nПотрачен{((shotValues.Mode != 0) ? "о" : string.Empty)} {equipment.RoF[shotValues.Mode]} патрон{((shotValues.Mode != 0) ? "ов" : string.Empty)}" +
+                       $"\nСтепень успеха: {shotValues.Degree}";
             }
 
-            await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[weapon.Mode]);
-            return $"Выстрел{((weapon.Mode != 0) ? "ы" : string.Empty)} прош{((weapon.Mode != 0) ? "ли" : "ёл")} мимо цели" +
-                   $"\nПотрачен{((weapon.Mode != 0) ? "о" : string.Empty)} {equipment.RoF[weapon.Mode]} патрон{((weapon.Mode != 0) ? "ов" : string.Empty)}" +
-                   $"\nСтепень успеха: {weapon.Degree}";
-        }
+            Armour armour = new(aType);
+            int result, sniper;
+            string buffString;
 
-        private async Task SingleShot(DataAccessLayer dataAccessLayer, int weaponid, int targetid)
-        {
-
-        }
-
-        public async Task<string> CalledShot(DataAccessLayer dataAccessLayer, int weaponid, int statusid)
-        {
-            if (GotHit())
+            switch (equipment.WeaponClass)
             {
-                Armour armour = new (aType);
-                int sniper, result;
-
-                if (Error)
-                {
-                    return "Неверное название оружия";
-                }
-
-                if (armour.Error)
-                {
-                    return "Неверное название брони";
-                }
-
-                switch (equipment.WeaponClass)
-                {
-                    case 0:
+                case 0:
+                    if (shotValues.Mode == 0)
+                    {
                         sniper = 0;
-                        if (equipment.Qualities[0] || weapon.AdditionalAim)
+                        if (equipment.Qualities[0] && shotValues.AdditionalAim)
                         {
-                            sniper = (int)weapon.Degree;
+                            sniper = (int)shotValues.Degree;
                         }
 
-                        result = armour.Damage(weapon.HittedPartId, equipment.DamageStats, equipment.Penetration, sniper);
-                        await dataAccessLayer.ChangeHp(statusid, weapon.HittedPartId, -result);
+                        result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration, sniper);
+                        await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
                         await dataAccessLayer.ChangeAmmo(weaponid, -1);
 
-                        return $"Выстрел успешно поразил {hitPoints[weapon.HittedPartId]}, нанеся <@{weapon.TargetId}> {result} урона." +
-                               $"\nПотрачен 1 патрон." +
-                               $"\nСтепень успеха: {weapon.Degree}";
+                        return $"Выстрел успешно поразил {hitPoints[shotValues.HittedPartId]}, нанеся <@{shotValues.TargetId}> {result} урона.\nПотрачен 1 патрон.\nСтепень успеха: {shotValues.Degree}";
+                    }
 
-                    case 1:
-                        return "Невозможно совершить прицельный выстрел из этого оружия";
+                    result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration);
+                    await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
+                    buffString = $"Выстрел успешно поразил {hitPoints[shotValues.HittedPartId]}, нанеся <@{shotValues.TargetId}> {result} урона.\n";
 
-                    default:
-                        return "Ошибка в классе оружия";
-                }
+                    for (int i = 1; i < (int)shotValues.Degree && i < equipment.RoF[shotValues.Mode]; i++)
+                    {
+                        shotValues.ThrowRoll100();
+                        shotValues.GetHittedPartId();
+                        result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration);
+                        await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
+                        buffString += $"Дополнительное попадание в {hitPoints[shotValues.HittedPartId]} нанесло {result} урона\n";
+                    }
+
+                    await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[shotValues.Mode]);
+
+                    buffString += $"Потрачено {equipment.RoF[shotValues.Mode]} патронов.\nСтепень успеха: {shotValues.Degree}";
+                    return buffString;
+
+                case 1:
+                    result = GetFullDamage(armour, equipment.DamageStats);
+                    await dataAccessLayer.CangeFullHp(targetid, result);
+                    await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                    return $"Заряд успешно поразил <@{shotValues.TargetId}>, нанеся максимально " + result + " урона";
+
+                default:
+                    return "Ошибка в классе оружия";
+            }
+        }
+
+        public async Task<string> CalledShot(DataAccessLayer dataAccessLayer, int weaponid, int statusid, int aimpoint)
+        {
+            Armour armour = new(aType);
+
+            if (equipment.Error)
+            {
+                return "Неверное название оружия";
             }
 
-            await dataAccessLayer.ChangeAmmo(weaponid, -1);
-            return $"Выстрел прошёл мимо цели\nПотрачен 1 патрон\nСтепень успеха: {weapon.Degree}";
+            if (armour.Error)
+            {
+                return "Неверное название брони";
+            }
+
+            shotValues.CalculateShot();
+            if (shotValues.Degree < 0)
+            {
+                await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                return $"Выстрел прошёл мимо цели\nПотрачен 1 патрон\nСтепень успеха: {shotValues.Degree}";
+            }
+
+            int sniper, result;
+
+            switch (equipment.WeaponClass)
+            {
+                case 0:
+                    sniper = 0;
+                    if (equipment.Qualities[0] || shotValues.AdditionalAim)
+                    {
+                        sniper = (int)shotValues.Degree;
+                    }
+
+                    result = armour.Damage(aimpoint, equipment.DamageStats, equipment.Penetration, sniper);
+                    await dataAccessLayer.ChangeHp(statusid, aimpoint, -result);
+                    await dataAccessLayer.ChangeAmmo(weaponid, -1);
+
+                    return $"Выстрел успешно поразил {hitPoints[aimpoint]}, нанеся <@{shotValues.TargetId}> {result} урона." +
+                           $"\nПотрачен 1 патрон." +
+                           $"\nСтепень успеха: {shotValues.Degree}";
+
+                case 1:
+                    return "Невозможно совершить прицельный выстрел из этого оружия";
+
+                default:
+                    return "Ошибка в классе оружия";
+            }
         }
 
         public int GetMaxAmmo()

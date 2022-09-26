@@ -107,7 +107,7 @@ namespace SkarpBot.Data
             return null;
         }
 
-        public Status GetArmour(ulong userid, ulong guildid)
+        public Status GetStatus(ulong userid, ulong guildid)
         {
             using var context = _contextFactory.CreateDbContext();
 

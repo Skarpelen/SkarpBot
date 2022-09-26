@@ -12,7 +12,7 @@ namespace SkarpBot.OnlyWar.Classes
         private int maxRange;
         private int maxAmmo;
         private bool[] qualities = new bool[11];
-        private int weaponClass = 0;
+        private int weaponClass; // 0,1 - range, 2,3 - melee, 4, 5 - grenades
         private bool error = false;
 
         public Equipment(string name)
@@ -28,6 +28,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 1.5;
                     maxRange = 30;
                     maxAmmo = 9;
+                    weaponClass = 0;
                     break;
 
                 case "тазер":
@@ -39,6 +40,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 30;
                     maxAmmo = 1;
                     qualities[2] = true;
+                    weaponClass = 0;
                     break;
 
                 case "автомат":
@@ -49,6 +51,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 5;
                     maxRange = 100;
                     maxAmmo = 30;
+                    weaponClass = 0;
                     break;
 
                 case "дробовик":
@@ -60,6 +63,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 30;
                     maxAmmo = 18;
                     qualities[1] = true;
+                    weaponClass = 0;
                     break;
 
                 case "винтовка":
@@ -71,6 +75,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 200;
                     maxAmmo = 20;
                     qualities[0] = true;
+                    weaponClass = 0;
                     break;
 
                 case "пулемет":
@@ -81,6 +86,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 30;
                     maxRange = 100;
                     maxAmmo = 75;
+                    weaponClass = 0;
                     break;
 
                 case "огнемет":
@@ -97,25 +103,27 @@ namespace SkarpBot.OnlyWar.Classes
                     break;
 
                 case "бластер":
-                    penetration = 0;
+                    penetration = 6;
                     rof = new int[] { 1, 0, 0 };
                     damageStats[0] = 1;
                     damageStats[1] = 10;
                     weight = 3;
-                    maxRange = 10;
+                    maxRange = 25;
                     maxAmmo = 3;
                     qualities[8] = true;
                     qualities[9] = true;
+                    weaponClass = 0;
                     break;
 
                 case "ббпп":
-                    penetration = 5;
+                    penetration = 3;
                     rof = new int[] { 1, 3, 7 };
                     damageStats[0] = 1;
                     damageStats[1] = 1;
                     weight = 4;
                     maxRange = 50;
                     maxAmmo = 24;
+                    weaponClass = 0;
                     break;
 
                 case "игольный":
@@ -128,6 +136,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxAmmo = 6;
                     qualities[0] = true;
                     qualities[10] = true;
+                    weaponClass = 0;
                     break;
 
                 case "эзопистолет":
@@ -139,6 +148,67 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 30;
                     maxAmmo = 10;
                     qualities[7] = true;
+                    weaponClass = 0;
+                    break;
+
+                case "пк":
+                    penetration = 6;
+                    rof = new int[] { 1, 0, 0 };
+                    damageStats[0] = 1;
+                    damageStats[1] = 4;
+                    weight = 3;
+                    maxRange = 20;
+                    maxAmmo = 12;
+                    qualities[8] = true;
+                    weaponClass = 0;
+                    break;
+
+                case "ак": //автомат коалиции
+                    penetration = 4;
+                    rof = new int[] { 1, 4, 0 };
+                    damageStats[0] = 1;
+                    damageStats[1] = 4;
+                    weight = 8;
+                    maxRange = 70;
+                    maxAmmo = 40;
+                    qualities[9] = true;
+                    weaponClass = 0;
+                    break;
+
+                case "дк":
+                    penetration = 3;
+                    rof = new int[] { 1, 2, 0 };
+                    damageStats[0] = 1;
+                    damageStats[1] = 8;
+                    weight = 3;
+                    maxRange = 40;
+                    maxAmmo = 8;
+                    qualities[1] = true;
+                    weaponClass = 1;
+                    break;
+
+                case "вк":
+                    penetration = 8;
+                    rof = new int[] { 1, 0, 0 };
+                    damageStats[0] = 1;
+                    damageStats[1] = 10;
+                    weight = 8;
+                    maxRange = 100;
+                    maxAmmo = 2;
+                    qualities[0] = true;
+                    weaponClass = 0;
+                    break;
+
+                case "пулк":
+                    penetration = 3;
+                    rof = new int[] { 0, 5, 10 };
+                    damageStats[0] = 1;
+                    damageStats[1] = 2;
+                    weight = 12;
+                    maxRange = 60;
+                    maxAmmo = 80;
+                    qualities[8] = true;
+                    weaponClass = 0;
                     break;
 
                 //////////////////////////
@@ -151,6 +221,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 9;
                     maxRange = 5;
                     maxAmmo = 0;
+                    weaponClass = 2;
                     break;
 
                 case "рука":
@@ -161,6 +232,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 0;
                     maxRange = 5;
                     maxAmmo = 0;
+                    weaponClass = 2;
                     break;
 
                 case "лезвие":
@@ -171,6 +243,7 @@ namespace SkarpBot.OnlyWar.Classes
                     weight = 3;
                     maxRange = 5;
                     maxAmmo = 0;
+                    weaponClass = 2;
                     break;
 
                 case "эзомеч":
@@ -182,6 +255,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 5;
                     maxAmmo = 0;
                     qualities[7] = true;
+                    weaponClass = 2;
                     break;
 
                 case "эзопосох":
@@ -193,6 +267,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 5;
                     maxAmmo = 0;
                     qualities[7] = true;
+                    weaponClass = 2;
                     break;
 
                 //////////////////////////
@@ -206,7 +281,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 15;
                     maxAmmo = 0;
                     qualities[3] = true;
-                    weaponClass = 2;
+                    weaponClass = 4;
                     break;
 
                 case "зажигательная":
@@ -219,7 +294,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxAmmo = 0;
                     qualities[3] = true;
                     qualities[5] = true;
-                    weaponClass = 2;
+                    weaponClass = 4;
                     break;
 
                 case "дымовая":
@@ -231,7 +306,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 25;
                     maxAmmo = 0;
                     qualities[4] = true;
-                    weaponClass = 3;
+                    weaponClass = 5;
                     break;
 
                 case "светошумовая":
@@ -243,7 +318,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 15;
                     maxAmmo = 0;
                     qualities[4] = true;
-                    weaponClass = 3;
+                    weaponClass = 5;
                     break;
 
                 case "тактическая":
@@ -255,7 +330,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 15;
                     maxAmmo = 0;
                     qualities[5] = true;
-                    weaponClass = 3;
+                    weaponClass = 5;
                     break;
 
                 case "газовая":
@@ -267,7 +342,7 @@ namespace SkarpBot.OnlyWar.Classes
                     maxRange = 15;
                     maxAmmo = 0;
                     qualities[3] = true;
-                    weaponClass = 3;
+                    weaponClass = 5;
                     break;
 
                 default:
@@ -281,8 +356,8 @@ namespace SkarpBot.OnlyWar.Classes
             var embed = new EmbedBuilder()
                 .WithTitle(name)
                 .AddField("Бронебойность", penetration, true)
-                .AddField("Режимы стрельбы", $"{rof[0]}, {rof[1]}, {rof[2]}", true)
-                .AddField("Урон", $"{damageStats[0]}к{damageStats[1]}", true)
+                .AddField("Режимы стрельбы", $"`{rof[0]}, {rof[1]}, {rof[2]}`", true)
+                .AddField("Урон", $"{damageStats[0]}к10+{damageStats[1]}", true)
                 .AddField("Оптимальная дальность", maxRange, true)
                 .AddField("Объем магазина", maxAmmo, true)
                 .AddField("Вес", weight, true)
@@ -302,6 +377,11 @@ namespace SkarpBot.OnlyWar.Classes
                 {
                     result += qualitiesList[i] + "\n";
                 }
+            }
+
+            if (result == "")
+            {
+                return "Особенностей нет";
             }
 
             return result;
@@ -355,7 +435,7 @@ namespace SkarpBot.OnlyWar.Classes
                 "```9.Мельта.\nИспользующее высокотемпературные потоки газа, под давлением переходящего в нестабильное состояние, это оружие с близкого расстояния может расплавить даже " +
                 "самые прочные материалы```",
 
-                "```10.Перегревающееся.\nОружие с этой особенностью перегревается, если при броске на попадание выпадает 91 или больше. При этом стрелок получает количество энергетического урона, " +
+                "```10.Перегревающееся.\nОружие с этой особенностью перегревается, если выполнено 3 очереди подряд. При этом стрелок получает количество энергетического урона, " +
                 "равное обычному урону оружия с бронебойностью 0. Этот урон приходится в руку (в ту, которой персонаж держит оружие, если оно одноручное; в выбранную случайно, " +
                 "если персонаж держал его двумя руками). Стрелок может избежать получения урона, бросив своѐ оружие в качестве свободного действия.На остывание оружие тратится " +
                 "один раунд; перегревшееся оружие не может вести огонь до того как начнется второй раунд после перегрева.```",

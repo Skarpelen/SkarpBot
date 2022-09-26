@@ -1,59 +1,33 @@
 ﻿namespace SkarpBot.OnlyWar
 {
+    using Discord;
     using SkarpBot.OnlyWar.Classes;
 
     public class Weapon
     {
-        public bool Error = false;
-        protected DamageDealer weapon;
+        protected DamageDealer shotValues;
         protected Equipment equipment;
         protected readonly string[] hitPoints = new string[] { "голову", "торс", "левую руку", "правую руку", "левую ногу", "правую ногу" };
         protected string aType;
+        protected bool error;
 
-        /// <summary>
-        /// Переведи число от 0 до 99 в айди части тела.
-        /// </summary>
-        /// <param name="d100">Число от 0 до 99.</param>
-        /// <returns>Айди части тела.</returns>
-        protected int GetHittedPartID(int d100)
+        public Weapon(int accuracy, int mode, string type, string armour, ulong id, bool aim)
         {
-            int d100Reversed = (d100 / 10) + ((d100 % 10) * 10);
+            shotValues = new DamageDealer(accuracy, mode, id, aim);
+            aType = armour;
+            equipment = new Equipment(type);
+            error = equipment.Error;
+        }
 
-            if (d100Reversed > 0 & d100Reversed < 11)
-            {
-                return 0;
-            }
+        public Weapon(string type)
+        {
+            equipment = new Equipment(type);
+            error = equipment.Error;
+        }
 
-            if (d100Reversed > 10 & d100Reversed < 31)
-            {
-                if (d100Reversed > 20)
-                {
-                    return 2;
-                }
-                else
-                {
-                    return 3;
-                }
-            }
-
-            if (d100Reversed > 30 & d100Reversed < 71)
-            {
-                return 1;
-            }
-
-            if (d100Reversed > 70 & d100Reversed < 100 || d100Reversed == 0)
-            {
-                if (d100Reversed == 0 || d100Reversed > 85)
-                {
-                    return 4;
-                }
-                else
-                {
-                    return 5;
-                }
-            }
-
-            return 6;
+        public bool Error
+        {
+            get { return error; }
         }
 
         /// <summary>
@@ -77,7 +51,7 @@
 
         protected static int RollDmg(int[] stats)
         {
-            Random rnd1 = new ();
+            Random rnd1 = new();
             int result = 0;
             for (int i = 0; i < stats[0]; i++)
             {
@@ -85,6 +59,11 @@
             }
 
             return result + stats[1];
+        }
+
+        public Embed GetWeaponInfo()
+        {
+            return equipment.FormEquipmentInfo();
         }
     }
 }

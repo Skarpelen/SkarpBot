@@ -35,17 +35,17 @@
             get { return d100Roll; }
         }
 
-        private int ThrowRoll100()
+        public void ThrowRoll100()
         {
             Random random = new Random();
-            return random.Next(100);
+            d100Roll = random.Next(100);
         }
 
         public void CalculateShot()
         {
-            d100Roll = ThrowRoll100();
+            ThrowRoll100();
             degree = CalculateDegree();
-            hittedPartId = GetHittedPartId();
+            GetHittedPartId();
         }
 
         public double CalculateDegree()
@@ -54,45 +54,51 @@
             return (totalAccuracy - d100Roll) / 10.0;
         }
 
-        private int GetHittedPartId()
+        public void GetHittedPartId()
         {
             int d100Reversed = (d100Roll / 10) + ((d100Roll % 10) * 10);
 
             if (d100Reversed > 0 & d100Reversed < 11)
             {
-                return 0;
+                hittedPartId = 0;
+                return;
             }
 
             if (d100Reversed > 10 & d100Reversed < 31)
             {
                 if (d100Reversed > 20)
                 {
-                    return 2;
+                    hittedPartId = 2;
+                    return;
                 }
                 else
                 {
-                    return 3;
+                    hittedPartId = 3;
+                    return;
                 }
             }
 
             if (d100Reversed > 30 & d100Reversed < 71)
             {
-                return 1;
+                hittedPartId = 1;
+                return;
             }
 
             if (d100Reversed > 70 & d100Reversed < 100 || d100Reversed == 0)
             {
                 if (d100Reversed == 0 || d100Reversed > 85)
                 {
-                    return 4;
+                    hittedPartId = 4;
+                    return;
                 }
                 else
                 {
-                    return 5;
+                    hittedPartId = 5;
+                    return;
                 }
             }
 
-            return 6;
+            hittedPartId = 6;
         }
     }
 }

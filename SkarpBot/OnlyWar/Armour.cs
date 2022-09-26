@@ -24,24 +24,15 @@
                     break;
 
                 case "средняя":
-                    human[0] = 2;
-                    human[1] = 5;
-                    human[2] = 3;
-                    human[3] = 3;
-                    human[4] = 3;
-                    human[5] = 3;
+                    human[0] = 5;
+                    human[1] = 9;
+                    human[2] = 6;
+                    human[3] = 6;
+                    human[4] = 6;
+                    human[5] = 6;
                     break;
 
-                case "мог":
-                    human[0] = 4;
-                    human[1] = 8;
-                    human[2] = 4;
-                    human[3] = 4;
-                    human[4] = 5;
-                    human[5] = 5;
-                    break;
-
-                case "член++":
+                case "улучшенная":
                     human[0] = 7;
                     human[1] = 11;
                     human[2] = 7;
@@ -51,21 +42,21 @@
                     break;
 
                 case "хорошая":
-                    human[0] = 7;
-                    human[1] = 12;
-                    human[2] = 9;
-                    human[3] = 9;
-                    human[4] = 9;
-                    human[5] = 9;
+                    human[0] = 9;
+                    human[1] = 14;
+                    human[2] = 11;
+                    human[3] = 11;
+                    human[4] = 12;
+                    human[5] = 12;
                     break;
 
                 case "тяжелая":
-                    human[0] = 10;
-                    human[1] = 15;
-                    human[2] = 12;
-                    human[3] = 12;
-                    human[4] = 12;
-                    human[5] = 12;
+                    human[0] = 12;
+                    human[1] = 18;
+                    human[2] = 14;
+                    human[3] = 14;
+                    human[4] = 15;
+                    human[5] = 15;
                     break;
 
                 case "мститель":

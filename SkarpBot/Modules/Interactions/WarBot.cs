@@ -49,7 +49,7 @@
             switch (type)
             {
                 case 0:
-                    var weapon = new FireWeapon(-1, -1, name, string.Empty, 0, false);
+                    var weapon = new FireWeapon(name);
                     if (weapon.Error)
                     {
                         await RespondAsync("Некорректное название оружия", null, false, true);
@@ -60,7 +60,7 @@
                     break;
 
                 case 1:
-                    var melee = new Melee(-1, name, string.Empty, 0);
+                    var melee = new Melee(name);
                     if (melee.Error)
                     {
                         await RespondAsync("Некорректное название оружия", null, false, true);
@@ -71,7 +71,7 @@
                     break;
 
                 case 2:
-                    var grenade = new Grenade(-1, name);
+                    var grenade = new Grenade(name);
                     if (grenade.Error)
                     {
                         await RespondAsync("Некорректное название гранаты", null, false, true);
@@ -139,24 +139,24 @@
             await RespondAsync("Пропиши `/добавить` для пополнения инвентаря", null, false, true, components: component.Build());
         }
 
-        [SlashCommand("установить", "Изменяет количество хп у выбранной части тела")]
-        public async Task SetHp(int point, int val)
-        {
-            val *= -1;
-            var armourname = DataAccessLayer.GetArmour(Context.User.Id, Context.Guild.Id);
-            await DataAccessLayer.ChangeHp(armourname.StatusId, point, val);
-            await RespondAsync("Значения применены", null, false, true);
-        }
+        //[SlashCommand("установить", "Изменяет количество хп у выбранной части тела")]
+        //public async Task SetHp(int point, int val)
+        //{
+        //    val *= -1;
+        //    var armourname = DataAccessLayer.GetStatus(Context.User.Id, Context.Guild.Id);
+        //    await DataAccessLayer.ChangeHp(armourname.StatusId, point, val);
+        //    await RespondAsync("Значения применены", null, false, true);
+        //}
 
-        [SlashCommand("изменить", "Изменяет количество хп у пользователя")]
-        [RequireUserPermission(GuildPermission.ManageRoles)]
-        public async Task SetHp(IUser user, int point, int val)
-        {
-            val *= -1;
-            var armourname = DataAccessLayer.GetArmour(Context.User.Id, Context.Guild.Id);
-            await DataAccessLayer.ChangeHp(armourname.StatusId, point, val);
-            await RespondAsync("Значения применены", null, false, true);
-        }
+        //[SlashCommand("изменить", "Изменяет количество хп у пользователя")]
+        //[RequireUserPermission(GuildPermission.ManageRoles)]
+        //public async Task SetHp(IUser user, int point, int val)
+        //{
+        //    val *= -1;
+        //    var armourname = DataAccessLayer.GetStatus(Context.User.Id, Context.Guild.Id);
+        //    await DataAccessLayer.ChangeHp(armourname.StatusId, point, val);
+        //    await RespondAsync("Значения применены", null, false, true);
+        //}
 
         [SlashCommand("перезарядка", "Перезарядить экипированное оружие")]
         public async Task Reload()
@@ -187,26 +187,27 @@
                 return;
             }
 
-            var equippedweapon = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
-            var armourname = DataAccessLayer.GetArmour(targetUser.Id, Context.Guild.Id);
-            var meleeCheck = new Melee(equippedweapon.WeaponName);
+            var equippedWeapon = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
+            var targetStatus = DataAccessLayer.GetStatus(targetUser.Id, Context.Guild.Id);
+            var meleeCheck = new Melee(equippedWeapon.WeaponName);
 
             string result;
 
             if (meleeCheck.Error)
             {
-                if (equippedweapon.CurrentAmmo < 1)
+                if (equippedWeapon.CurrentAmmo < 1)
                 {
                     await RespondAsync("Клик-клик... оружие не стреляет");
                     return;
                 }
-                var gunFire = new FireWeapon(accuracy, mode, equippedweapon.WeaponName, armourname.Armour, targetUser.Id, isAim == 1 ? true : false);
-                result = await gunFire.RegularShot(DataAccessLayer, equippedweapon.WeaponId, armourname.StatusId);
+
+                var gunFire = new FireWeapon(accuracy, mode, equippedWeapon.WeaponName, targetStatus.Armour, targetUser.Id, isAim == 1 ? true : false);
+                result = await gunFire.RegularShot(DataAccessLayer, equippedWeapon.WeaponId, targetStatus.StatusId);
             }
             else
             {
-                var melee = new Melee(accuracy, equippedweapon.WeaponName, armourname.Armour, targetUser.Id);
-                result = await melee.Swing(DataAccessLayer, armourname.StatusId);
+                var melee = new Melee(accuracy, 0, equippedWeapon.WeaponName, targetStatus.Armour, targetUser.Id, false);
+                result = await melee.Swing(DataAccessLayer, targetStatus.StatusId);
             }
 
             await RespondAsync(result);
@@ -226,7 +227,7 @@
             }
 
             var equippedweapon = DataAccessLayer.GetEquippedWeapon(Context.User.Id, Context.Guild.Id);
-            var armourname = DataAccessLayer.GetArmour(targetUser.Id, Context.Guild.Id);
+            var armourname = DataAccessLayer.GetStatus(targetUser.Id, Context.Guild.Id);
             var meleeCheck = new Melee(equippedweapon.WeaponName);
 
             string result;
@@ -243,8 +244,8 @@
                 return;
             }
 
-            var gunFire = new FireWeapon(accuracy, equippedweapon.WeaponName, armourname.Armour, targetUser.Id, aimpoint, isAim == 1 ? true : false);
-            result = await gunFire.CalledShot(DataAccessLayer, equippedweapon.WeaponId, armourname.StatusId);
+            var gunFire = new FireWeapon(accuracy, 0, equippedweapon.WeaponName, armourname.Armour, targetUser.Id, isAim == 1 ? true : false);
+            result = await gunFire.CalledShot(DataAccessLayer, equippedweapon.WeaponId, armourname.StatusId, aimpoint);
 
             await RespondAsync(result);
         }
@@ -257,26 +258,15 @@
         [SlashCommand("статы", "Статы выбранного оружия")]
         public async Task Stats(string wType)
         {
-            var gun = new FireWeapon(-1, 0, wType, string.Empty, 1, false);
-            var grenade = new Grenade(wType);
-            var knife = new Melee(wType);
+            var weapon = new Weapon(wType);
 
-            if (!gun.Error)
-            {
-                await RespondAsync(gun.WriteQualitiesFire());
-            }
-            else if (!grenade.Error)
-            {
-                await RespondAsync(grenade.WriteQualitiesGrenade());
-            }
-            else if (!knife.Error)
-            {
-                await RespondAsync(knife.WriteQualitiesMelee());
-            }
-            else
+            if (weapon.Error)
             {
                 await RespondAsync("Ошибка в названии оружия", null, false, true);
+                return;
             }
+
+            await RespondAsync(embed: weapon.GetWeaponInfo());
         }
 
         /// <summary>
@@ -294,7 +284,7 @@
                 return;
             }
 
-            var grenadeThrow = new Grenade(accuracy, wType);
+            var grenadeThrow = new Grenade(accuracy, 1, wType, string.Empty, 1, false);
             if (grenadeThrow.Error)
             {
                 await RespondAsync("Такой гранаты не существует", null, false, true);

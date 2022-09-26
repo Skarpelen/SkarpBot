@@ -1,27 +1,33 @@
-﻿using SkarpBot.OnlyWar.Classes;
-
-namespace SkarpBot.OnlyWar
+﻿namespace SkarpBot.OnlyWar
 {
     public class Grenade : Weapon
     {
+        public Grenade(int accuracy, int mode, string type, string armour, ulong id, bool aim)
+            : base(accuracy, mode, type, armour, id, aim)
+        {
+            if (!error)
+            {
+                if (!(equipment.WeaponClass == 4 || equipment.WeaponClass == 5))
+                {
+                    error = true;
+                }
+            }
+        }
+
+        public Grenade(string type)
+            : base(type)
+        {
+            if (!error)
+            {
+                if (!(equipment.WeaponClass == 4 || equipment.WeaponClass == 5))
+                {
+                    error = true;
+                }
+            }
+        }
+
         private int effectType;
         private string type;
-
-        public Grenade(int accuracy, string type)
-        {
-            weapon = new DamageDealer(accuracy, 0, 1, false);
-            Type = type;
-            equipment = new Equipment(type);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Grenade"/> class.
-        /// </summary>
-        /// <param name="type">Название гранаты.</param>
-        public Grenade(string type)
-        {
-            equipment = new Equipment(type);
-        }
 
         public int EffectType { get => effectType; set => effectType = value; }
 
@@ -34,7 +40,8 @@ namespace SkarpBot.OnlyWar
                 return "Неверное название гранаты";
             }
 
-            if (GotHit())
+            shotValues.CalculateShot();
+            if (shotValues.Degree > 0)
             {
                 return ThrowResult();
             }
