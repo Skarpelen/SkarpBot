@@ -21,7 +21,7 @@
             {
                 if (string.IsNullOrEmpty(_prefix))
                 {
-                    _prefix = DataAccessLayer.GetPrefix(Context.Guild.Id);
+                    _prefix = "?";
                 }
 
                 return _prefix;

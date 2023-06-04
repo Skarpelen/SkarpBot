@@ -1,6 +1,5 @@
 ﻿namespace SkarpBot
 {
-    using System.Threading.Tasks;
     using Discord;
     using Discord.Commands;
     using Discord.Interactions;
@@ -12,17 +11,20 @@
     using Microsoft.Extensions.Hosting;
     using SkarpBot.Data;
     using SkarpBot.Data.Context;
+    using SkarpBot.Data.Models;
     using SkarpBot.Logger;
+    using System.Threading.Tasks;
+    using Utf8Json;
 
     /// <summary>
     /// Сердце бота.
     /// </summary>
-    public class program
+    public class Program
     {
         private DiscordSocketClient _client;
 
         // Program entry point
-        public static Task Main(string[] args) => new program().MainAsync();
+        public static Task Main(string[] args) => new Program().MainAsync();
 
         public async Task MainAsync()
         {
@@ -41,16 +43,17 @@
 
             // Add the configuration to the registered services
             .AddSingleton(config)
-            .AddDbContextFactory<SkarpBotDbContext>(options =>
-            options.UseMySql(
-                config.GetConnectionString("Default"),
-                new MySqlServerVersion(new Version(8, 0, 29))))
+
+            // Add DataAccessLayer as a singleton
             .AddSingleton<DataAccessLayer>()
+
+            // Add SkarpBotDbContext as a scoped service
+            .AddDbContext<SkarpBotDbContext>(options => options.UseSqlite(config.GetConnectionString("DjangoConnection")))
 
             // Add the DiscordSocketClient, along with specifying the GatewayIntents and user caching
             .AddSingleton(x => new DiscordSocketClient(new DiscordSocketConfig
             {
-                GatewayIntents = Discord.GatewayIntents.All,
+                GatewayIntents = GatewayIntents.All,
                 LogGatewayIntentWarnings = false,
                 AlwaysDownloadUsers = true,
                 LogLevel = LogSeverity.Debug,
@@ -103,7 +106,15 @@
 
             _client.Ready += async () =>
             {
-                 await commands.RegisterCommandsGloballyAsync(true);
+                var registrationTask = commands.RegisterCommandsGloballyAsync(true);
+                var delayTask = Task.Delay(TimeSpan.FromSeconds(10)); // Установите желаемое время ожидания
+
+                var completedTask = await Task.WhenAny(registrationTask, delayTask);
+                if (completedTask == delayTask)
+                {
+                    // Прошло время ожидания, выполните соответствующие действия
+                    // например, выведите сообщение об ошибке или предпримите другие меры
+                }
             };
 
             await _client.LoginAsync(TokenType.Bot, config["Token"]);

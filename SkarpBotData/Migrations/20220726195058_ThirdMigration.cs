@@ -18,7 +18,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Users_Guilds_GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Weapons_Users_UsersId",
@@ -30,7 +30,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropIndex(
                 name: "IX_Status_UsersId",
@@ -46,7 +46,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropColumn(
                 name: "UsersId",
@@ -68,7 +68,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.AddColumn<int>(
                 name: "GuildsId1",
-                table: "Users",
+                table: "User",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
@@ -94,7 +94,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildsId1",
-                table: "Users",
+                table: "User",
                 column: "GuildsId1");
 
             migrationBuilder.CreateIndex(
@@ -111,7 +111,7 @@ namespace SkarpBot.Data.Migrations
                 name: "FK_Grenades_Users_UsersId",
                 table: "Grenades",
                 column: "UsersId",
-                principalTable: "Users",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -119,13 +119,13 @@ namespace SkarpBot.Data.Migrations
                 name: "FK_Status_Users_UsersId",
                 table: "Status",
                 column: "UsersId",
-                principalTable: "Users",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_Guilds_GuildsId1",
-                table: "Users",
+                table: "User",
                 column: "GuildsId1",
                 principalTable: "Guilds",
                 principalColumn: "Id",
@@ -135,7 +135,7 @@ namespace SkarpBot.Data.Migrations
                 name: "FK_Weapons_Users_UsersId",
                 table: "Weapons",
                 column: "UsersId",
-                principalTable: "Users",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

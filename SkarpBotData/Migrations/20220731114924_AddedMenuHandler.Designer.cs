@@ -120,7 +120,7 @@ namespace SkarpBot.Data.Migrations
                     b.ToTable("Status");
                 });
 
-            modelBuilder.Entity("SkarpBot.Data.Models.Users", b =>
+            modelBuilder.Entity("SkarpBot.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +138,7 @@ namespace SkarpBot.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("SkarpBot.Data.Models.Weapons", b =>

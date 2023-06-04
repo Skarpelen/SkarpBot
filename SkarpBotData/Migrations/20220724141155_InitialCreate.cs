@@ -29,7 +29,7 @@ namespace SkarpBot.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -68,7 +68,7 @@ namespace SkarpBot.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Grenades_Users_UsersId",
                         column: x => x.UsersId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -96,7 +96,7 @@ namespace SkarpBot.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Status_Users_UsersId",
                         column: x => x.UsersId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -121,7 +121,7 @@ namespace SkarpBot.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Weapons_Users_UsersId",
                         column: x => x.UsersId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -139,7 +139,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildsId",
-                table: "Users",
+                table: "User",
                 column: "GuildsId");
 
             migrationBuilder.CreateIndex(
@@ -160,7 +160,7 @@ namespace SkarpBot.Data.Migrations
                 name: "Weapons");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Guilds");

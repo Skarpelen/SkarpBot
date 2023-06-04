@@ -101,7 +101,7 @@ namespace SkarpBot.Data.Migrations
                     b.ToTable("Status");
                 });
 
-            modelBuilder.Entity("SkarpBot.Data.Models.Users", b =>
+            modelBuilder.Entity("SkarpBot.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +121,7 @@ namespace SkarpBot.Data.Migrations
 
                     b.HasIndex("GuildsId");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("SkarpBot.Data.Models.Weapons", b =>
@@ -153,30 +153,30 @@ namespace SkarpBot.Data.Migrations
 
             modelBuilder.Entity("SkarpBot.Data.Models.Grenades", b =>
                 {
-                    b.HasOne("SkarpBot.Data.Models.Users", "Users")
+                    b.HasOne("SkarpBot.Data.Models.User", "User")
                         .WithMany("Grenades")
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SkarpBot.Data.Models.Status", b =>
                 {
-                    b.HasOne("SkarpBot.Data.Models.Users", "Users")
+                    b.HasOne("SkarpBot.Data.Models.User", "User")
                         .WithMany("Status")
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SkarpBot.Data.Models.Users", b =>
+            modelBuilder.Entity("SkarpBot.Data.Models.User", b =>
                 {
                     b.HasOne("SkarpBot.Data.Models.Guilds", "Guilds")
-                        .WithMany("Users")
+                        .WithMany("User")
                         .HasForeignKey("GuildsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -186,21 +186,21 @@ namespace SkarpBot.Data.Migrations
 
             modelBuilder.Entity("SkarpBot.Data.Models.Weapons", b =>
                 {
-                    b.HasOne("SkarpBot.Data.Models.Users", "Users")
+                    b.HasOne("SkarpBot.Data.Models.User", "User")
                         .WithMany("Weapons")
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SkarpBot.Data.Models.Guilds", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SkarpBot.Data.Models.Users", b =>
+            modelBuilder.Entity("SkarpBot.Data.Models.User", b =>
                 {
                     b.Navigation("Grenades");
 

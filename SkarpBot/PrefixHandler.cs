@@ -45,7 +45,7 @@
 
             var argPos = 0;
             var user = message.Author as SocketGuildUser;
-            var prefix = "!"; // DataAccessLayer.GetPrefix(user.Guild.Id);
+            var prefix = "!"; // DataAccessLayer.GetPrefix(user.guild.id);
             if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 CaseCommands(message);
@@ -105,7 +105,7 @@
                 case "лецгер":
                     msg.Channel.SendMessageAsync("душнила");
 
-                    // if (((SocketGuildUser)msg.Author).Roles.Any(r => r.Id == 926417680347570176))
+                    // if (((SocketGuildUser)msg.Author).Roles.Any(r => r.id == 926417680347570176))
                     //    msg.Channel.SendMessageAsync("И это факт");
                     break;
 

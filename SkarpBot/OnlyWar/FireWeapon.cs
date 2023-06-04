@@ -28,7 +28,7 @@
             }
         }
 
-        public async Task<string> RegularShot(DataAccessLayer dataAccessLayer, int weaponid, int targetid)
+        public async Task<string> RegularShot(int weaponid, int targetid)
         {
             if (equipment.RoF[shotValues.Mode] == 0)
             {
@@ -38,7 +38,7 @@
             shotValues.CalculateShot();
             if (shotValues.Degree < 0)
             {
-                await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[shotValues.Mode]);
+                await DataAccessLayer.ChangeAmmoAsync(weaponid, -equipment.RoF[shotValues.Mode]);
                 return $"Выстрел{((shotValues.Mode != 0) ? "ы" : string.Empty)} прош{((shotValues.Mode != 0) ? "ли" : "ёл")} мимо цели" +
                        $"\nПотрачен{((shotValues.Mode != 0) ? "о" : string.Empty)} {equipment.RoF[shotValues.Mode]} патрон{((shotValues.Mode != 0) ? "ов" : string.Empty)}" +
                        $"\nСтепень успеха: {shotValues.Degree}";
@@ -60,14 +60,14 @@
                         }
 
                         result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration, sniper);
-                        await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
-                        await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                        await DataAccessLayer.ChangeHpAsync(targetid, shotValues.HittedPartId, -result);
+                        await DataAccessLayer.ChangeAmmoAsync(weaponid, -1);
 
                         return $"Выстрел успешно поразил {hitPoints[shotValues.HittedPartId]}, нанеся <@{shotValues.TargetId}> {result} урона.\nПотрачен 1 патрон.\nСтепень успеха: {shotValues.Degree}";
                     }
 
                     result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration);
-                    await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
+                    await DataAccessLayer.ChangeHpAsync(targetid, shotValues.HittedPartId, -result);
                     buffString = $"Выстрел успешно поразил {hitPoints[shotValues.HittedPartId]}, нанеся <@{shotValues.TargetId}> {result} урона.\n";
 
                     for (int i = 1; i < (int)shotValues.Degree && i < equipment.RoF[shotValues.Mode]; i++)
@@ -75,19 +75,19 @@
                         shotValues.ThrowRoll100();
                         shotValues.GetHittedPartId();
                         result = armour.Damage(shotValues.HittedPartId, equipment.DamageStats, equipment.Penetration);
-                        await dataAccessLayer.ChangeHp(targetid, shotValues.HittedPartId, -result);
+                        await DataAccessLayer.ChangeHpAsync(targetid, shotValues.HittedPartId, -result);
                         buffString += $"Дополнительное попадание в {hitPoints[shotValues.HittedPartId]} нанесло {result} урона\n";
                     }
 
-                    await dataAccessLayer.ChangeAmmo(weaponid, -equipment.RoF[shotValues.Mode]);
+                    await DataAccessLayer.ChangeAmmoAsync(weaponid, -equipment.RoF[shotValues.Mode]);
 
                     buffString += $"Потрачено {equipment.RoF[shotValues.Mode]} патронов.\nСтепень успеха: {shotValues.Degree}";
                     return buffString;
 
                 case 1:
                     result = GetFullDamage(armour, equipment.DamageStats);
-                    await dataAccessLayer.CangeFullHp(targetid, result);
-                    await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                    await DataAccessLayer.ChangeFullHpAsync(targetid, result);
+                    await DataAccessLayer.ChangeAmmoAsync(weaponid, -1);
                     return $"Заряд успешно поразил <@{shotValues.TargetId}>, нанеся максимально " + result + " урона";
 
                 default:
@@ -95,7 +95,7 @@
             }
         }
 
-        public async Task<string> CalledShot(DataAccessLayer dataAccessLayer, int weaponid, int statusid, int aimpoint)
+        public async Task<string> CalledShot(int weaponid, int statusid, int aimpoint)
         {
             Armour armour = new(aType);
 
@@ -112,7 +112,7 @@
             shotValues.CalculateShot();
             if (shotValues.Degree < 0)
             {
-                await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                await DataAccessLayer.ChangeAmmoAsync(weaponid, -1);
                 return $"Выстрел прошёл мимо цели\nПотрачен 1 патрон\nСтепень успеха: {shotValues.Degree}";
             }
 
@@ -128,8 +128,8 @@
                     }
 
                     result = armour.Damage(aimpoint, equipment.DamageStats, equipment.Penetration, sniper);
-                    await dataAccessLayer.ChangeHp(statusid, aimpoint, -result);
-                    await dataAccessLayer.ChangeAmmo(weaponid, -1);
+                    await DataAccessLayer.ChangeHpAsync(statusid, aimpoint, -result);
+                    await DataAccessLayer.ChangeAmmoAsync(weaponid, -1);
 
                     return $"Выстрел успешно поразил {hitPoints[aimpoint]}, нанеся <@{shotValues.TargetId}> {result} урона." +
                            $"\nПотрачен 1 патрон." +

@@ -10,7 +10,7 @@ namespace SkarpBot.Data.Migrations
         {
             migrationBuilder.AlterColumn<int>(
                 name: "GuildsId",
-                table: "Users",
+                table: "User",
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(ulong),
@@ -21,7 +21,7 @@ namespace SkarpBot.Data.Migrations
         {
             migrationBuilder.AlterColumn<ulong>(
                 name: "GuildsId",
-                table: "Users",
+                table: "User",
                 type: "bigint unsigned",
                 nullable: false,
                 oldClrType: typeof(int),

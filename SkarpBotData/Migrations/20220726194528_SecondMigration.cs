@@ -10,11 +10,11 @@ namespace SkarpBot.Data.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Users_Guilds_GuildsId",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_GuildsId",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.AddColumn<int>(
                 name: "UserId",
@@ -25,7 +25,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.AlterColumn<ulong>(
                 name: "GuildsId",
-                table: "Users",
+                table: "User",
                 type: "bigint unsigned",
                 nullable: false,
                 oldClrType: typeof(int),
@@ -33,7 +33,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.AddColumn<int>(
                 name: "GuildsId1",
-                table: "Users",
+                table: "User",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
@@ -54,12 +54,12 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildsId1",
-                table: "Users",
+                table: "User",
                 column: "GuildsId1");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_Guilds_GuildsId1",
-                table: "Users",
+                table: "User",
                 column: "GuildsId1",
                 principalTable: "Guilds",
                 principalColumn: "Id",
@@ -70,11 +70,11 @@ namespace SkarpBot.Data.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Users_Guilds_GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropColumn(
                 name: "UserId",
@@ -82,7 +82,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "GuildsId1",
-                table: "Users");
+                table: "User");
 
             migrationBuilder.DropColumn(
                 name: "UserId",
@@ -94,7 +94,7 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.AlterColumn<int>(
                 name: "GuildsId",
-                table: "Users",
+                table: "User",
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(ulong),
@@ -102,12 +102,12 @@ namespace SkarpBot.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildsId",
-                table: "Users",
+                table: "User",
                 column: "GuildsId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_Guilds_GuildsId",
-                table: "Users",
+                table: "User",
                 column: "GuildsId",
                 principalTable: "Guilds",
                 principalColumn: "Id",
